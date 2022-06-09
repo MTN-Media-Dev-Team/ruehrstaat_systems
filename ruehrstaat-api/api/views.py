@@ -77,8 +77,7 @@ class carrier(APIView):
             return Response({'carrier': serializer.data}, status=status.HTTP_200_OK)
 
     def post(self, request):
-        carrier_id = request.data.get('id')
-        if carrier_id:
+        if request.data.get('id'):
             return Response({'error': 'Use PUT request to edit carrier'}, status=status.HTTP_400_BAD_REQUEST)
         if not checkForWriteAccess(request, None):
             return Response({'error': 'Not allowed to create new carriers'}, status=status.HTTP_401_UNAUTHORIZED)
