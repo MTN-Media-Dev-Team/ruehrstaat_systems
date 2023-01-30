@@ -137,4 +137,7 @@ def journal_entry(cmdr: str, is_beta: bool, system: Optional[str], station: Opti
                 #log carrier id
                 this.logger.info(f"Carrier ID: { entry['CarrierID'] }")
                 result = f"{this.plugin_name}: Error updating Ruehrstaat API. Check API-Key."
+    # if entry["event"] == "CarrierStats":
+    #     # log full entry for debugging
+    #     this.logger.info(f"CarrierStats entry: { entry }")
     return result
