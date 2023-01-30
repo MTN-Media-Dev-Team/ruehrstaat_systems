@@ -91,7 +91,7 @@ class carrierService(APIView):
     def put(self, request):
         carrier_id = request.data.get('id')
         operation = request.data.get('operation').lower()
-        serviceName = request.data.get('service').lower()
+        serviceName = request.data.get('service')
         if not carrier_id:
             return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
         if not operation:
