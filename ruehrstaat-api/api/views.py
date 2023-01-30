@@ -32,12 +32,15 @@ class carrier(APIView):
 
     def get(self, request):
         carrier_id = request.GET.get('id')
-        if not carrier_id:
-            return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if not Carrier.objects.filter(id=carrier_id):
+        carrier_callsign = request.GET.get('callsign')
+        if not carrier_id and not carrier_callsign:
+            return Response({'error': 'No carrier id or callsign provided'}, status=status.HTTP_400_BAD_REQUEST)
+        if not Carrier.objects.filter(id=carrier_id) or not Carrier.objects.filter(callsign=carrier_callsign):
             return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
         carrier = Carrier.objects.get(id=carrier_id)
+        if not carrier:
+            carrier = Carrier.objects.get(callsign=carrier_callsign)
+            carrier_id = carrier.id
         if not checkForReadAccess(request, carrier_id):
             return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = CarrierSerializer(carrier)
