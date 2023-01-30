@@ -10,8 +10,8 @@ class CarrierServicesSerializer(serializers.ModelSerializer):
 
 class CarrierSerializer(serializers.ModelSerializer):
     services = CarrierServicesSerializer(many=True, read_only=True)
-
+    dockingAccess = serializers.ChoiceField(choices=Carrier.DOCKING_ACCESS_CHOICES, default='all', source='get_dockingAccess_display')
     class Meta:
         model = Carrier
-        fields = ['id', 'name', 'callsign', 'currentLocation', 'previousLocation', 'services', 'dockingAccess', 'owner']
+        fields = ['id', 'name', 'callsign', 'currentLocation', 'previousLocation', 'dockingAccess', 'services', 'owner']
 
