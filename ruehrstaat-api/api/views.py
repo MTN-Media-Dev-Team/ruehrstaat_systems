@@ -41,15 +41,18 @@ class carrierJump(APIView):
             return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
         if request_type == 'jump':
             # get request json data
-            jsondata = request.data.get('data')
-            body = jsondata.get('Body')
+            body = request.data.get('body')
 
             carrier.previousLocation = carrier.currentLocation
             carrier.currentLocation = body
 
+            return Response({'success': 'Carrier jump noted'}, status=status.HTTP_200_OK)
+
         elif request_type == 'cancel':
             carrier.currentLocation = carrier.previousLocation
             carrier.previousLocation = None
+
+            return Response({'success': 'Carrier jump cancelled'}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid request type provided'}, status=status.HTTP_400_BAD_REQUEST)
 
