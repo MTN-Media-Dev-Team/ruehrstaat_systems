@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from carriers.models import Carrier
+from carriers.models import Carrier, CarrierService
 from .models import ApiKey
 from .auth import HasAPIKey, checkForReadAccessAll, checkForReadAccess, checkForWriteAccessAll, checkForWriteAccess
 from .serializers import CarrierSerializer
@@ -34,6 +34,8 @@ class carrierJump(APIView):
         request_type = request.data.get('type')
         if not carrier_id:
             return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
+        if not request_type:
+            return Response({'error': 'No request type provided'}, status=status.HTTP_400_BAD_REQUEST)
         if not Carrier.objects.filter(id=carrier_id):
             return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
         carrier = Carrier.objects.get(id=carrier_id)
@@ -42,6 +44,9 @@ class carrierJump(APIView):
         if request_type == 'jump':
             # get request json data
             body = request.data.get('body')
+
+            if not body:
+                return Response({'error': 'No body provided'}, status=status.HTTP_400_BAD_REQUEST)
 
             carrier.previousLocation = carrier.currentLocation
             carrier.currentLocation = body
@@ -60,6 +65,58 @@ class carrierJump(APIView):
         else:
             return Response({'error': 'Invalid request type provided'}, status=status.HTTP_400_BAD_REQUEST)
 
+class carrierPermission(APIView):
+    permission_classes = [HasAPIKey]
+
+    def put(self, request):
+        carrier_id = request.data.get('id')
+        if not carrier_id:
+            return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
+        if not Carrier.objects.filter(id=carrier_id):
+            return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
+        carrier = Carrier.objects.get(id=carrier_id)
+        if not checkForWriteAccess(request, carrier_id):
+            return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        new_access = request.data.get('access')
+
+        carrier.dockingAccess = new_access
+        carrier.save()
+        return Response({'success': 'Carrier permission updated'}, status=status.HTTP_200_OK)
+
+
+class carrierService(APIView):
+    permission_classes = [HasAPIKey]
+
+    def put(self, request):
+        carrier_id = request.data.get('id')
+        operation = request.data.get('operation').lower()
+        serviceName = request.data.get('service').lower()
+        if not carrier_id:
+            return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
+        if not operation:
+            return Response({'error': 'No operation provided'}, status=status.HTTP_400_BAD_REQUEST)
+        if not serviceName:
+            return Response({'error': 'No service provided'}, status=status.HTTP_400_BAD_REQUEST)
+        if not Carrier.objects.filter(id=carrier_id):
+            return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
+        if not CarrierService.objects.filter(name=serviceName):
+            return Response({'error': 'Invalid service provided'}, status=status.HTTP_400_BAD_REQUEST)
+        carrier = Carrier.objects.get(id=carrier_id)
+        service = CarrierService.objects.get(name=serviceName)
+        if not checkForWriteAccess(request, carrier_id):
+            return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
+        if operation == 'activate' or operation == 'resume':
+            carrier.services.add(service)
+            carrier.save()
+            return Response({'success': 'Service activated'}, status=status.HTTP_200_OK)
+        elif operation == 'deactivate' or operation == 'pause':
+            carrier.services.remove(service)
+            carrier.save()
+            return Response({'success': 'Service deactivated'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Invalid operation provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
 
 
 

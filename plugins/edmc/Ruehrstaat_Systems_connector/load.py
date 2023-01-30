@@ -15,7 +15,7 @@ except ImportError:
 this = sys.modules[__name__]
 this.plugin_name = "RSTAPI"
 this.plugin_url = "https://github.com/MTN-Media-Dev-Team/ruehrstaat_edmc_plugin"
-this.version_info = (0, 1, 0)
+this.version_info = (0, 1, 1)
 this.version = ".".join(map(str, this.version_info))
 this.api_url = "https://api.ruehrstaat.de/api/v1"
 
@@ -84,31 +84,57 @@ def prefs_changed(cmdr: str, is_beta: bool) -> None:
 
 def journal_entry(cmdr: str, is_beta: bool, system: Optional[str], station: Optional[str], entry: Dict[str, Any], stateentry: Dict[str, Any]) -> Optional[str]:
     result = None
+    apikey = config.get_str(CONFIG_API_KEY)
+    if not apikey:
+        this.logger.error("No credentials")
+        result = f"{this.plugin_name}: Add credentials."
+        headers = {'Authorization': 'Bearer ' + apikey}
+        return result
     if entry["event"] in ["CarrierJumpRequest", "CarrierJumpCancelled"] and not is_beta:
-        apikey = config.get_str(CONFIG_API_KEY)
-        if apikey:
-            # create apikey authorization bearer token header
-            headers = {'Authorization': 'Bearer ' + apikey}
-            if entry["event"] == "CarrierJumpRequest":
-                put = {
-                    "id": entry['CarrierID'],
-                    "type": "jump",
-                    "body": entry['Body'],
-                }
-            else:
-                put = {
-                    "id": entry['CarrierID'],
-                    "type": "cancel"
-                }
-            with requests.put(this.api_url + '/carrierJump', json=put, headers=headers) as response:
-                if response.status_code == 200:
-                    this.logger.info(f"{ entry['event']} event posted to Ruehrstaat API")
-                else:
-                    this.logger.info(f"{ entry['event']} event posting to Ruehrstaat API failed: { str(response.status_code) }")
-                    #log carrier id
-                    this.logger.info(f"Carrier ID: { entry['CarrierID'] }")
-                    result = f"{this.plugin_name}: Error updating Ruehrstaat API. Check API-Key."
+        if entry["event"] == "CarrierJumpRequest":
+            put = {
+                "id": entry['CarrierID'],
+                "type": "jump",
+                "body": entry['Body'],
+            }
         else:
-            this.logger.error("No credentials")
-            result = f"{this.plugin_name}: Add credentials."
+            put = {
+                "id": entry['CarrierID'],
+                "type": "cancel"
+            }
+        with requests.put(this.api_url + '/carrierJump', json=put, headers=headers) as response:
+            if response.status_code == 200:
+                this.logger.info(f"{ entry['event']} event posted to Ruehrstaat API")
+            else:
+                this.logger.info(f"{ entry['event']} event posting to Ruehrstaat API failed: { str(response.status_code) }")
+                #log carrier id
+                this.logger.info(f"Carrier ID: { entry['CarrierID'] }")
+                result = f"{this.plugin_name}: Error updating Ruehrstaat API. Check API-Key."
+    if entry["event"] == "CarrierDockingPermission":
+        put = {
+            "id": entry['CarrierID'],
+            "access": entry['DockingAccess'],
+        }
+        with requests.put(this.api_url + '/carrierPermission', json=put, headers=headers) as response:
+            if response.status_code == 200:
+                this.logger.info(f"{ entry['event']} event posted to Ruehrstaat API")
+            else:
+                this.logger.info(f"{ entry['event']} event posting to Ruehrstaat API failed: { str(response.status_code) }")
+                #log carrier id
+                this.logger.info(f"Carrier ID: { entry['CarrierID'] }")
+                result = f"{this.plugin_name}: Error updating Ruehrstaat API. Check API-Key."
+    if entry["event"] == "CarrierCrewServices":
+        put = {
+            "id": entry['CarrierID'],
+            "operation": entry['Operation'],
+            "service": entry['CrewRole'],
+        }
+        with requests.put(this.api_url + '/carrierService', json=put, headers=headers) as response:
+            if response.status_code == 200:
+                this.logger.info(f"{ entry['event']} event posted to Ruehrstaat API")
+            else:
+                this.logger.info(f"{ entry['event']} event posting to Ruehrstaat API failed: { str(response.status_code) }")
+                #log carrier id
+                this.logger.info(f"Carrier ID: { entry['CarrierID'] }")
+                result = f"{this.plugin_name}: Error updating Ruehrstaat API. Check API-Key."
     return result

@@ -15,6 +15,7 @@ class CarrierService(models.Model):
     def __str__(self):
         return self.name
 
+
 class Carrier(models.Model):
     # each carrier has a unique id provided when creating a carrier and is used as primary key
     id = models.CharField(max_length=20, primary_key=True)
@@ -23,7 +24,17 @@ class Carrier(models.Model):
     currentLocation = models.CharField(max_length=255, null=False, blank=False)
     previousLocation = models.CharField(max_length=255, null=True, blank=True)
     services = models.ManyToManyField(CarrierService)
-    dockingAccess = models.BooleanField(default=True, null=False, blank=False)
+    
+    # docking access can be ONE of the following: all/none/friends/squadron/squadronfriends and ONLY allow one of these values
+    DOCKING_ACCESS_CHOICES = [
+        ('all', 'All'),
+        ('none', 'None'),
+        ('friends', 'Friends'),
+        ('squadron', 'Squadron'),
+        ('squadronfriends', 'Squadron & Friends'),
+    ]
+    dockingAccess = models.CharField(max_length=255, choices=DOCKING_ACCESS_CHOICES, default='all')
+
     owner = models.CharField(max_length=255, null=False, blank=False)
 
     def __str__(self):

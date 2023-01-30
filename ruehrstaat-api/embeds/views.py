@@ -1,6 +1,5 @@
 from django.shortcuts import render
 
-from carriers.models import Carrier, CarrierService
 from carriers.info import getCarrierInfo
 
 from rest_framework import status

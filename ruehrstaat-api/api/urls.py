@@ -6,4 +6,6 @@ urlpatterns = [
     path('getAllCarriers', views.getAllCarriers.as_view(), name='getAllCarriers'),
     path('carrier', views.carrier.as_view(), name='carrier'),
     path('carrierJump', views.carrierJump.as_view(), name='carrierJump'),
+    path('carrierPermission', views.carrierPermission.as_view(), name='carrierPermission'),
+    path('carrierService', views.carrierService.as_view(), name='carrierService'),
 ]
