@@ -26,18 +26,51 @@ class getAllCarriers(APIView):
 
 
 
+class carrierJump(APIView):
+    permission_classes = [HasAPIKey]
+
+    def put(self, request):
+        carrier_id = request.data.get('id')
+        request_type = request.data.get('type')
+        if not carrier_id:
+            return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
+        if not Carrier.objects.filter(id=carrier_id):
+            return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
+        carrier = Carrier.objects.get(id=carrier_id)
+        if not checkForWriteAccess(request, carrier_id):
+            return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
+        if request_type == 'jump':
+            # get request json data
+            jsondata = request.data.get('data')
+            body = jsondata.get('Body')
+
+            carrier.previousLocation = carrier.currentLocation
+            carrier.currentLocation = body
+
+        elif request_type == 'cancel':
+            carrier.currentLocation = carrier.previousLocation
+            carrier.previousLocation = None
+        else:
+            return Response({'error': 'Invalid request type provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 class carrier(APIView):
 
     permission_classes = [HasAPIKey]
 
     def get(self, request):
         carrier_id = request.GET.get('id')
-        if not carrier_id:
-            return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if not Carrier.objects.filter(id=carrier_id):
+        carrier_callsign = request.GET.get('callsign')
+        if not carrier_id and not carrier_callsign:
+            return Response({'error': 'No carrier id or callsign provided'}, status=status.HTTP_400_BAD_REQUEST)
+        if not Carrier.objects.filter(id=carrier_id) or not Carrier.objects.filter(callsign=carrier_callsign):
             return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
         carrier = Carrier.objects.get(id=carrier_id)
+        if not carrier:
+            carrier = Carrier.objects.get(callsign=carrier_callsign)
+            carrier_id = carrier.id
         if not checkForReadAccess(request, carrier_id):
             return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = CarrierSerializer(carrier)
@@ -77,8 +110,7 @@ class carrier(APIView):
             return Response({'carrier': serializer.data}, status=status.HTTP_200_OK)
 
     def post(self, request):
-        carrier_id = request.data.get('id')
-        if carrier_id:
+        if request.data.get('id'):
             return Response({'error': 'Use PUT request to edit carrier'}, status=status.HTTP_400_BAD_REQUEST)
         if not checkForWriteAccess(request, None):
             return Response({'error': 'Not allowed to create new carriers'}, status=status.HTTP_401_UNAUTHORIZED)
