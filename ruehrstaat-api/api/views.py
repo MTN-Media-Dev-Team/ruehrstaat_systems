@@ -100,14 +100,8 @@ class carrier(APIView):
                 carrier.callsign = request.data.get('callsign')
             if request.data.get('currentLocation'):
                 carrier.currentLocation = request.data.get('currentLocation')
-            if request.data.get('nextLocation'):
-                carrier.nextLocation = request.data.get('nextLocation')
-            if request.data.get('nextDestination'):
-                carrier.nextDestination = request.data.get('nextDestination')
-            if request.data.get('nextDestinationTime'):
-                carrier.nextDestinationTime = request.data.get('nextDestinationTime')
-            if request.data.get('departureTime'):
-                carrier.departureTime = request.data.get('departureTime')
+            if request.data.get('previousLocation'):
+                carrier.previousLocation = request.data.get('previousLocation')
             if request.data.get('dockingAccess'):
                 carrier.dockingAccess = request.data.get('dockingAccess')
             if request.data.get('owner'):
