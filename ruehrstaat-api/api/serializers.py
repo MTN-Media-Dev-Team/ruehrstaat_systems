@@ -6,7 +6,7 @@ from carriers.models import CarrierService
 class CarrierServicesSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarrierService
-        fields = ('name', 'description', 'odyssey')
+        fields = ('name', 'label', 'description', 'odyssey')
 
 class CarrierSerializer(serializers.ModelSerializer):
     services = CarrierServicesSerializer(many=True, read_only=True)

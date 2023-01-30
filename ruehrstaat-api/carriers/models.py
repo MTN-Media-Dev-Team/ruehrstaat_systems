@@ -7,13 +7,14 @@ PERCENTAGE_VALIDATOR = [MinValueValidator(0), MaxValueValidator(100)]
 # Create your models here.
 
 class CarrierService(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True, null=False, blank=False)
+    label = models.CharField(max_length=255, null=False, blank=False)
     description = models.TextField()
     # mark as odyssey only
     odyssey = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.label
 
 
 class Carrier(models.Model):
