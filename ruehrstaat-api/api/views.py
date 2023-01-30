@@ -26,6 +26,36 @@ class getAllCarriers(APIView):
 
 
 
+class carrierJump(APIView):
+    permission_classes = [HasAPIKey]
+
+    def put(self, request):
+        carrier_id = request.data.get('id')
+        request_type = request.data.get('type')
+        if not carrier_id:
+            return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
+        if not Carrier.objects.filter(id=carrier_id):
+            return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
+        carrier = Carrier.objects.get(id=carrier_id)
+        if not checkForWriteAccess(request, carrier_id):
+            return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
+        if request_type == 'jump':
+            # get request json data
+            jsondata = request.data.get('data')
+            body = jsondata.get('Body')
+
+            carrier.previousLocation = carrier.currentLocation
+            carrier.currentLocation = body
+
+        elif request_type == 'cancel':
+            carrier.currentLocation = carrier.previousLocation
+            carrier.previousLocation = None
+        else:
+            return Response({'error': 'Invalid request type provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 class carrier(APIView):
 
     permission_classes = [HasAPIKey]

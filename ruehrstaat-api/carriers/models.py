@@ -16,9 +16,12 @@ class CarrierService(models.Model):
         return self.name
 
 class Carrier(models.Model):
+    # each carrier has a unique id provided when creating a carrier and is used as primary key
+    id = models.CharField(max_length=20, primary_key=True)
     name = models.CharField(max_length=255, null=False, blank=False)
     callsign = models.CharField(max_length=255, unique=True, null=False, blank=False)
     currentLocation = models.CharField(max_length=255, null=False, blank=False)
+    previousLocation = models.CharField(max_length=255, null=True, blank=True)
     nextLocation = models.CharField(max_length=255, null=True, blank=True)
     nextDestination = models.CharField(max_length=255, null=True, blank=True)
     nextDestinationTime = models.DateTimeField(null=True, blank=True)
