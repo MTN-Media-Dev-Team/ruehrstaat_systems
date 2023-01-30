@@ -88,8 +88,8 @@ def journal_entry(cmdr: str, is_beta: bool, system: Optional[str], station: Opti
     if not apikey:
         this.logger.error("No credentials")
         result = f"{this.plugin_name}: Add credentials."
-        headers = {'Authorization': 'Bearer ' + apikey}
         return result
+    headers = {'Authorization': 'Bearer ' + apikey}
     if entry["event"] in ["CarrierJumpRequest", "CarrierJumpCancelled"] and not is_beta:
         if entry["event"] == "CarrierJumpRequest":
             put = {
@@ -106,7 +106,7 @@ def journal_entry(cmdr: str, is_beta: bool, system: Optional[str], station: Opti
             if response.status_code == 200:
                 this.logger.info(f"{ entry['event']} event posted to Ruehrstaat API")
             else:
-                this.logger.info(f"{ entry['event']} event posting to Ruehrstaat API failed: { str(response.status_code) }")
+                this.logger.info(f"{ entry['event']} event posting to Ruehrstaat API failed: { str(response.status_code) } : { response.text }")
                 #log carrier id
                 this.logger.info(f"Carrier ID: { entry['CarrierID'] }")
                 result = f"{this.plugin_name}: Error updating Ruehrstaat API. Check API-Key."
@@ -119,7 +119,7 @@ def journal_entry(cmdr: str, is_beta: bool, system: Optional[str], station: Opti
             if response.status_code == 200:
                 this.logger.info(f"{ entry['event']} event posted to Ruehrstaat API")
             else:
-                this.logger.info(f"{ entry['event']} event posting to Ruehrstaat API failed: { str(response.status_code) }")
+                this.logger.info(f"{ entry['event']} event posting to Ruehrstaat API failed: { str(response.status_code) } : { response.text }")
                 #log carrier id
                 this.logger.info(f"Carrier ID: { entry['CarrierID'] }")
                 result = f"{this.plugin_name}: Error updating Ruehrstaat API. Check API-Key."
@@ -133,7 +133,7 @@ def journal_entry(cmdr: str, is_beta: bool, system: Optional[str], station: Opti
             if response.status_code == 200:
                 this.logger.info(f"{ entry['event']} event posted to Ruehrstaat API")
             else:
-                this.logger.info(f"{ entry['event']} event posting to Ruehrstaat API failed: { str(response.status_code) }")
+                this.logger.info(f"{ entry['event']} event posting to Ruehrstaat API failed: { str(response.status_code) } : { response.text }")
                 #log carrier id
                 this.logger.info(f"Carrier ID: { entry['CarrierID'] }")
                 result = f"{this.plugin_name}: Error updating Ruehrstaat API. Check API-Key."
