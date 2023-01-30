@@ -13,5 +13,5 @@ class CarrierSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Carrier
-        fields = ['id', 'name', 'callsign', 'currentLocation', 'nextLocation', 'nextDestination', 'nextDestinationTime', 'departureTime','services', 'dockingAccess', 'owner']
+        fields = ['id', 'name', 'callsign', 'currentLocation', 'previousLocation', 'services', 'dockingAccess', 'owner']
 
