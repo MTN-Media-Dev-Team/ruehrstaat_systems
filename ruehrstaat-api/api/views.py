@@ -46,11 +46,15 @@ class carrierJump(APIView):
             carrier.previousLocation = carrier.currentLocation
             carrier.currentLocation = body
 
+            carrier.save()
+
             return Response({'success': 'Carrier jump noted'}, status=status.HTTP_200_OK)
 
         elif request_type == 'cancel':
             carrier.currentLocation = carrier.previousLocation
             carrier.previousLocation = None
+
+            carrier.save()
 
             return Response({'success': 'Carrier jump cancelled'}, status=status.HTTP_200_OK)
         else:
