@@ -13,6 +13,7 @@ To setuo the bot, you need to create the following files:
 
 with the following content:
 
-> ["DISCORD"]
-> bot_token = {your bot token}
+["DISCORD"]
+
+bot_token = {your bot token}
 
