@@ -9,11 +9,5 @@ To build the bot, you need to have the following installed:
 - [Nextcord](https://docs.nextcord.dev/en/stable/#)
 
 To setuo the bot, you need to create the following files:
-- config.ini
-
-with the following content:
-
-["DISCORD"]
-
-bot_token = {your bot token}
+- config.ini (see examples/config.ini.example)
 
