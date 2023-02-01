@@ -1,5 +1,5 @@
 import configparser
-from nextcord.ext import commands
+from nextcord.ext import commands as nxCommands
 
 import sys
 import logging
@@ -31,7 +31,7 @@ LONGPROGRAMNAME = f"{PROGRAMNAME} - by MTN Media Dev Team"
 print(LONGPROGRAMNAME)
 print(LONGVERSION)
 
-bot = commands.Bot()
+bot = nxCommands.Bot()
 
 from database import BotDB
 db = BotDB()
