@@ -1,7 +1,7 @@
 import logging  
 
 class BotDB:
-    def __init__(self, db_name):
+    def __init__(self):
         import sqlite3 as sql
         logging.debug("Initializing Database...")
 
