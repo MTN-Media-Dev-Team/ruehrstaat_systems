@@ -37,6 +37,7 @@ class Carrier(models.Model):
     dockingAccess = models.CharField(max_length=255, choices=DOCKING_ACCESS_CHOICES, default='all')
 
     owner = models.CharField(max_length=255, null=False, blank=False)
+    ownerDiscordID = models.CharField(max_length=255, null=True, blank=True)
 
     imageURL = models.URLField(max_length=255, null=True, blank=True)
     isFlagship = models.BooleanField(default=False)

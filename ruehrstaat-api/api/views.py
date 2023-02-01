@@ -171,6 +171,8 @@ class carrier(APIView):
                 carrier.dockingAccess = request.data.get('dockingAccess')
             if request.data.get('owner'):
                 carrier.owner = request.data.get('owner')
+            if request.data.get('ownerDiscordID'):
+                carrier.ownerDiscordID = request.data.get('ownerDiscordID')
             if request.data.get('imageURL'):
                 carrier.imageURL = request.data.get('imageURL')
             if request.data.get('isFlagship'):
