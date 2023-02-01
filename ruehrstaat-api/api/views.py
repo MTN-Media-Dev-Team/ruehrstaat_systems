@@ -171,6 +171,10 @@ class carrier(APIView):
                 carrier.dockingAccess = request.data.get('dockingAccess')
             if request.data.get('owner'):
                 carrier.owner = request.data.get('owner')
+            if request.data.get('imageURL'):
+                carrier.imageURL = request.data.get('imageURL')
+            if request.data.get('isFlagship'):
+                carrier.isFlagship = request.data.get('isFlagship')
             carrier.save()
             serializer = CarrierSerializer(carrier)
             return Response({'carrier': serializer.data}, status=status.HTTP_200_OK)
