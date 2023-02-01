@@ -136,3 +136,5 @@ test.txt
 
 #Stuff
 config.cfg
+*.ini
+discord-bot/bot.db
