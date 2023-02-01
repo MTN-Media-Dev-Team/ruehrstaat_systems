@@ -1,4 +1,4 @@
-class Carrier_Service:
+class Service:
     def __init__(self, name, label, description, odyssey):
         self.name = name
         self.description = description

@@ -8,5 +8,5 @@ urlpatterns = [
     path('carrierJump', views.carrierJump.as_view(), name='carrierJump'),
     path('carrierPermission', views.carrierPermission.as_view(), name='carrierPermission'),
     path('carrierService', views.carrierService.as_view(), name='carrierService'),
-    path('getAllServices', views.getAllServices, name='getAllServices'),
+    path('getAllServices', views.getAllServices().as_view(), name='getAllServices'),
 ]
