@@ -1,6 +1,8 @@
 from classes.carrier import Carrier
 import requests, os, time, json
 
+from difflib import get_close_matches
+
 cached_carriers = {}
 
 def __getCarrierInfo(carrierID):
@@ -22,8 +24,15 @@ def __getCarrierInfo(carrierID):
 def __formatCarrierName(carrierName):
     if not carrierName.startswith("RST "):
         carrierName = "RST " + carrierName
-    carrierName = carrierName[:4] + carrierName[4].upper() + carrierName[5:].lower()
-    return carrierName
+    carrierNames = __getAllCarrierNamesAsList()
+    if carrierName in carrierNames:
+        return carrierName
+    matches = get_close_matches(carrierName, __getAllCarrierNamesAsList, n=1, cutoff=0.8)
+    if len(matches) > 0:
+        carrierName = matches[0]
+        return carrierName
+    else:
+        return "RST Vanguard"
 
 def recacheAllCarriers():
     url = 'https://api.ruehrstaat.de/api/v1/getAllCarriers'
@@ -75,4 +84,11 @@ def getAllCarrierNames():
     carrier_names = {}
     for carrier in cached_carriers:
         carrier_names[carrier] = cached_carriers[carrier].name
+    return carrier_names
+    
+def __getAllCarrierNamesAsList():
+    # carrier names as list
+    carrier_names = []
+    for carrier in cached_carriers:
+        carrier_names.append(cached_carriers[carrier].name)
     return carrier_names

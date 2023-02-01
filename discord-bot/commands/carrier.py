@@ -30,4 +30,7 @@ def initCarrierCommands(bot, args_dict):
         view = View()
         view.add_item(selectCarrier)
         selectmessage = await interaction.response.send_message("Select a Carrier", view=view, ephemeral=True)
+
+
+    @bot.slash_command(name="passenger", description="Gives you the Passenger Role for a ", guild_ids=[TESTING_GUILD_ID])
         

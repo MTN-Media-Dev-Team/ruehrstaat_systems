@@ -27,6 +27,7 @@ class Carrier:
         self.previous_location = None
         self.dockingAccess = None
         self.owner = None
+        self.ownerDiscordID = None
         self.services = []
         self.last_update = time.time()
         self.imageURL = None
@@ -39,6 +40,7 @@ class Carrier:
         self.previousLocation = carrier_data["previousLocation"]
         self.dockingAccess = carrier_data["dockingAccess"]
         self.owner = carrier_data["owner"]
+        self.ownerDiscordID = int(carrier_data["ownerDiscordID"])
         self.imageURL = carrier_data["imageURL"]
         self.isFlagship = bool(carrier_data["isFlagship"])
 
