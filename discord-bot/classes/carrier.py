@@ -1,4 +1,4 @@
-import json, os, requests, logging
+import json, os, requests, logging, time
 
 from .service import Service as CarrierService
 
@@ -10,9 +10,10 @@ def getServices():
     headers = {'Authorization': 'Bearer ' + os.getenv("READ_API_KEY")}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
-        services = json.loads(response.text)
+        services = json.loads(response.content)["services"]
         for service in services:
             CARRIER_SERVICES[service["name"]] = CarrierService(service["name"], service["label"], service["description"], bool(service["odyssey"]))
+            logging.debug("Added Service: " + service["name"])
     else:
         return None
 getServices()
@@ -28,11 +29,13 @@ class Carrier:
         self.previous_location = carrier_data["previous_location"]
         self.dockingAccess = carrier_data["dockingAccess"]
         self.owner = carrier_data["owner"]
+
+        # save current timestamp as last update
+        self.last_update = time.time()
         
         # go through carrier_data services, search for them in CARRIER_SERVICES and add them to self.services
         self.services = []
         for service in carrier_data["services"]:
             if service["name"] in CARRIER_SERVICES:
                 self.services.append(CARRIER_SERVICES[service["name"]])
-        
-logging.debug(CARRIER_SERVICES)
+    

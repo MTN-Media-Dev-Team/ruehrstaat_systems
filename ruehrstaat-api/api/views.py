@@ -137,7 +137,7 @@ class carrier(APIView):
         carrier_callsign = request.GET.get('callsign')
         if not carrier_id and not carrier_callsign:
             return Response({'error': 'No carrier id or callsign provided'}, status=status.HTTP_400_BAD_REQUEST)
-        if not Carrier.objects.filter(id=carrier_id) or not Carrier.objects.filter(callsign=carrier_callsign):
+        if not Carrier.objects.filter(id=carrier_id) and not Carrier.objects.filter(callsign=carrier_callsign):
             return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_404_NOT_FOUND)
         carrier = Carrier.objects.get(id=carrier_id)
         if not carrier:
