@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from carriers.models import Carrier, CarrierService
 from .models import ApiKey
 from .auth import HasAPIKey, checkForReadAccessAll, checkForReadAccess, checkForWriteAccessAll, checkForWriteAccess
-from .serializers import CarrierSerializer
+from .serializers import CarrierSerializer, CarrierServicesSerializer
 
 # get all registered carriers
 
@@ -24,7 +24,15 @@ class getAllCarriers(APIView):
         serializer = CarrierSerializer(carriers, many=True)
         return JsonResponse({'carriers': serializer.data}, safe=False)
 
+class getAllServices(APIView):
+    permission_classes = [HasAPIKey]
 
+    def get(self, request):
+        if not checkForReadAccessAll(request):
+            return Response({'error': 'No access to any carriers'}, status=status.HTTP_401_UNAUTHORIZED)
+        services = CarrierService.objects.all()
+        serializer = CarrierServicesSerializer(services, many=True)
+        return JsonResponse({'services': serializer.data}, safe=False)
 
 class carrierJump(APIView):
     permission_classes = [HasAPIKey]
