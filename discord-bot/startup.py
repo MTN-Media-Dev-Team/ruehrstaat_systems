@@ -36,7 +36,11 @@ bot = nxCommands.Bot()
 from database import BotDB
 db = BotDB()
 
+# initialize carriers
 from classes import carrier
+from caching import recacheAllCarriers
+
+recacheAllCarriers()
 
 #on_ready
 @bot.event

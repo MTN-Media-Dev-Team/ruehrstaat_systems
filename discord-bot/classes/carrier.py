@@ -21,14 +21,26 @@ getServices()
 class Carrier:
     def __init__(self, carrier_id):
         self.id = carrier_id
+        self.name = None
+        self.callsign = None
+        self.current_location = None
+        self.previous_location = None
+        self.dockingAccess = None
+        self.owner = None
+        self.services = []
+        self.last_update = time.time()
+        self.imageURL = None
+        self.isFlagship = False
 
     def setCarrierData(self, carrier_data):
         self.name = carrier_data["name"]
         self.callsign = carrier_data["callsign"]
-        self.current_location = carrier_data["current_location"]
-        self.previous_location = carrier_data["previous_location"]
+        self.currentLocation = carrier_data["currentLocation"]
+        self.previousLocation = carrier_data["previousLocation"]
         self.dockingAccess = carrier_data["dockingAccess"]
         self.owner = carrier_data["owner"]
+        self.imageURL = carrier_data["imageURL"]
+        self.isFlagship = bool(carrier_data["isFlagship"])
 
         # save current timestamp as last update
         self.last_update = time.time()
