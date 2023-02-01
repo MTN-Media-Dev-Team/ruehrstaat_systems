@@ -1,2 +1,2 @@
-["DISCORD"]
-bot_token = {Your Discord-Bot Token}
+["TESTING"]
+TESTING_GUILD_ID = {Your Discord-Guild ID}
