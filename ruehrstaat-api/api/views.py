@@ -37,7 +37,7 @@ class carrierJump(APIView):
         if not request_type:
             return Response({'error': 'No request type provided'}, status=status.HTTP_400_BAD_REQUEST)
         if not Carrier.objects.filter(id=carrier_id):
-            return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_404_NOT_FOUND)
         carrier = Carrier.objects.get(id=carrier_id)
         if not checkForWriteAccess(request, carrier_id):
             return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -99,9 +99,9 @@ class carrierService(APIView):
         if not serviceName:
             return Response({'error': 'No service provided'}, status=status.HTTP_400_BAD_REQUEST)
         if not Carrier.objects.filter(id=carrier_id):
-            return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_404_NOT_FOUND)
         if not CarrierService.objects.filter(name=serviceName):
-            return Response({'error': 'Invalid service provided'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid service provided'}, status=status.HTTP_404_NOT_FOUND)
         carrier = Carrier.objects.get(id=carrier_id)
         service = CarrierService.objects.get(name=serviceName)
         if not checkForWriteAccess(request, carrier_id):
@@ -115,7 +115,7 @@ class carrierService(APIView):
             carrier.save()
             return Response({'success': 'Service deactivated'}, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'Invalid operation provided'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid operation provided'}, status=status.HTTP_404_NOT_FOUND)
         
 
 
@@ -130,7 +130,7 @@ class carrier(APIView):
         if not carrier_id and not carrier_callsign:
             return Response({'error': 'No carrier id or callsign provided'}, status=status.HTTP_400_BAD_REQUEST)
         if not Carrier.objects.filter(id=carrier_id) or not Carrier.objects.filter(callsign=carrier_callsign):
-            return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_404_NOT_FOUND)
         carrier = Carrier.objects.get(id=carrier_id)
         if not carrier:
             carrier = Carrier.objects.get(callsign=carrier_callsign)
@@ -183,7 +183,7 @@ class carrier(APIView):
         if not carrier_id:
             return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
         if not Carrier.objects.filter(id=carrier_id):
-            return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid carrier id provided'}, status=status.HTTP_404_NOT_FOUND)
         carrier = Carrier.objects.get(id=carrier_id)
         if not checkForWriteAccess(request, carrier_id):
             return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
