@@ -14,12 +14,12 @@ def checkForReadAccessAll(request):
     api_key = ApiKey.objects.get_from_key(key)
     return api_key.hasReadAccessTo.all()
 
-def checkForReadAccess(request, carrier_id):
+def checkForReadAccess(request, carrier_id = None):
     key = request.META["HTTP_AUTHORIZATION"].split()[1]
     api_key = ApiKey.objects.get_from_key(key)
     if api_key.hasReadAccessToAll:
         return True
-    if api_key.hasReadAccessTo.filter(id=carrier_id):
+    if carrier_id and api_key.hasReadAccessTo.filter(id=carrier_id):
         return True
     return False 
 

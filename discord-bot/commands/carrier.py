@@ -9,7 +9,7 @@ def initCarrierCommands(bot, args_dict):
         await interaction.response.send_message("Test")
     
     @bot.slash_command(name="carrierinfo", description="Get Information about an specific Squadron Carrier", guild_ids=[TESTING_GUILD_ID])
-    async def carrierinfo(interaction: Interaction, arg1: str= SlashOption(name="Carrier", required=True)):
+    async def carrierinfo(interaction: Interaction, arg1: str= SlashOption(name="carrier", required=True)):
         await interaction.response.send_message("I am a Placeholder")
 
 

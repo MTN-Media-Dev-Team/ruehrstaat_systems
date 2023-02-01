@@ -28,8 +28,8 @@ class getAllServices(APIView):
     permission_classes = [HasAPIKey]
 
     def get(self, request):
-        if not checkForReadAccessAll(request):
-            return Response({'error': 'No access to any carriers'}, status=status.HTTP_401_UNAUTHORIZED)
+        if checkForReadAccessAll(request):
+            return Response({'error': 'No read access'}, status=status.HTTP_401_UNAUTHORIZED)
         services = CarrierService.objects.all()
         serializer = CarrierServicesSerializer(services, many=True)
         return JsonResponse({'services': serializer.data}, safe=False)
