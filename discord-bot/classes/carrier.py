@@ -40,7 +40,9 @@ class Carrier:
         self.previousLocation = carrier_data["previousLocation"]
         self.dockingAccess = carrier_data["dockingAccess"]
         self.owner = carrier_data["owner"]
-        self.ownerDiscordID = int(carrier_data["ownerDiscordID"])
+
+        if carrier_data["ownerDiscordID"]:
+            self.ownerDiscordID = int(carrier_data["ownerDiscordID"])
         self.imageURL = carrier_data["imageURL"]
         self.isFlagship = bool(carrier_data["isFlagship"])
 
@@ -52,4 +54,46 @@ class Carrier:
         for service in carrier_data["services"]:
             if service["name"] in CARRIER_SERVICES:
                 self.services.append(CARRIER_SERVICES[service["name"]])
+
+    def setCarrierOwnerDiscordID(self, ownerDiscordID):
+        self.ownerDiscordID = ownerDiscordID
+        # write to api
+        url = 'https://api.ruehrstaat.de/api/v1/carrier'
+        headers = {'Authorization': 'Bearer ' + os.getenv("WRITE_API_KEY")}
+        data = {
+            "id": self.id,
+            "ownerDiscordID": self.ownerDiscordID
+        }
+        print(data)
+        response = requests.put(url, headers=headers, data=data)
+        print(response)
+        if response.status_code == 200:
+            logging.debug("Successfully updated carrier ownerDiscordID in API")
+        else:
+            logging.error("Error updating carrier ownerDiscordID in API")
+
+    def setCarrierLocation(self, location):
+        self.previousLocation = self.currentLocation
+        self.currentLocation = location
+        # write to api
+        url = 'https://api.ruehrstaat.de/api/v1/carrier'
+        headers = {'Authorization': 'Bearer ' + os.getenv("WRITE_API_KEY")}
+        data = {
+            "id": self.id,
+            "currentLocation": self.currentLocation,
+            "previousLocation": self.previousLocation
+        }
+        response = requests.put(url, headers=headers, data=data)
+        if response.status_code == 200:
+            logging.debug("Successfully updated carrier location in API")
+            return True
+        else:
+            logging.error("Error updating carrier location in API")
+            return False
+        
+
+
+
+    
+
     
