@@ -57,5 +57,8 @@ initCarrierCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID})
 from commands.fun import initFunCommands
 initFunCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID})
 
+from commands.captain import initCaptainCommands
+initCaptainCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID})
+
 bot.run(BOT_TOKEN)
 

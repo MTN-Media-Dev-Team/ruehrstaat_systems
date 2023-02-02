@@ -15,3 +15,25 @@ class ApiKey(AbstractAPIKey):
     hasWriteAccessToAll = models.BooleanField(default=False, null=False, blank=False)
 
 
+#add a model for logging changes made using the api
+class ApiLog(models.Model):
+    #user that made the change
+    user = models.ForeignKey(ApiKey, on_delete=models.CASCADE)
+    #carrier that was changed
+    carrier = models.ForeignKey(Carrier, on_delete=models.CASCADE)
+    #time of change
+    time = models.DateTimeField(auto_now_add=True)
+    #type of change
+    type = models.CharField(max_length=20)
+    #changedBySoftware choose between "edmc" or "discord" or "admin" or "other"
+    SOURCE_CHOICES = [
+        ('edmc', 'EDMC'),
+        ('discord', 'Discord'),
+        ('admin', 'Admin'),
+        ('other', 'Other'),
+    ]
+    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default='other')
+    #old value
+    oldValue = models.CharField(max_length=100)
+    #new value
+    newValue = models.CharField(max_length=100)

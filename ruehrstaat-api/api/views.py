@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from carriers.models import Carrier, CarrierService
-from .models import ApiKey
+from .models import ApiKey, ApiLog
 from .auth import HasAPIKey, checkForReadAccessAll, checkForReadAccess, checkForWriteAccessAll, checkForWriteAccess
 from .serializers import CarrierSerializer, CarrierServicesSerializer
 
@@ -40,6 +40,10 @@ class carrierJump(APIView):
     def put(self, request):
         carrier_id = request.data.get('id')
         request_type = request.data.get('type')
+        request_source = "other"
+        if request.data.get('source'):
+            request_source = request.data.get('source')
+
         if not carrier_id:
             return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
         if not request_type:
@@ -60,6 +64,7 @@ class carrierJump(APIView):
             carrier.currentLocation = body
 
             carrier.save()
+            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=request_source, type='jump', oldValue=carrier.previousLocation, newValue=carrier.currentLocation)
 
             return Response({'success': 'Carrier jump noted'}, status=status.HTTP_200_OK)
 
@@ -68,6 +73,7 @@ class carrierJump(APIView):
             carrier.previousLocation = None
 
             carrier.save()
+            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=request_source, type='jumpcancel', oldValue=carrier.currentLocation, newValue=carrier.previousLocation)
 
             return Response({'success': 'Carrier jump cancelled'}, status=status.HTTP_200_OK)
         else:
@@ -78,6 +84,10 @@ class carrierPermission(APIView):
 
     def put(self, request):
         carrier_id = request.data.get('id')
+        request_source = "other"
+        if request.data.get('source'):
+            request_source = request.data.get('source')
+
         if not carrier_id:
             return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
         if not Carrier.objects.filter(id=carrier_id):
@@ -88,8 +98,11 @@ class carrierPermission(APIView):
         
         new_access = request.data.get('access')
 
+        ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=request_source, type='permission', oldValue=carrier.dockingAccess, newValue=new_access)
+
         carrier.dockingAccess = new_access
         carrier.save()
+        
         return Response({'success': 'Carrier permission updated'}, status=status.HTTP_200_OK)
 
 
@@ -100,6 +113,9 @@ class carrierService(APIView):
         carrier_id = request.data.get('id')
         operation = request.data.get('operation').lower()
         serviceName = request.data.get('service')
+        source = "other"
+        if request.data.get('source'):
+            source = request.data.get('source')
         if not carrier_id:
             return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
         if not operation:
@@ -115,10 +131,16 @@ class carrierService(APIView):
         if not checkForWriteAccess(request, carrier_id):
             return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
         if operation == 'activate' or operation == 'resume':
+
+            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=source, type='service-activate', oldValue=carrier.services, newValue=service)
+
             carrier.services.add(service)
             carrier.save()
             return Response({'success': 'Service activated'}, status=status.HTTP_200_OK)
         elif operation == 'deactivate' or operation == 'pause':
+
+            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=source, type='service-deactivate', oldValue=carrier.services, newValue=service)
+
             carrier.services.remove(service)
             carrier.save()
             return Response({'success': 'Service deactivated'}, status=status.HTTP_200_OK)
@@ -150,6 +172,9 @@ class carrier(APIView):
 
     def put(self, request):
         carrier_id = request.data.get('id')
+        request_source = "other"
+        if request.data.get('source'):
+            request_source = request.data.get('source')
         if carrier_id:
             if not Carrier.objects.filter(id=carrier_id):
                 return Response({'error': 'Invalid carrier id provided, to create a carrier please use POST request'}, status=status.HTTP_400_BAD_REQUEST)
@@ -158,28 +183,55 @@ class carrier(APIView):
             if not checkForWriteAccess(request, carrier_id):
                 return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
 
+            changes = {}
+            old_values = {}
+
             # update carrier with new values from post form, if fields empty use old values
             if request.data.get('name'):
+                old_values['name'] = carrier.name
                 carrier.name = request.data.get('name')
+                changes['name'] = request.data.get('name')
             if request.data.get('callsign'):
+                old_values['callsign'] = carrier.callsign   
                 carrier.callsign = request.data.get('callsign')
+                changes['callsign'] = request.data.get('callsign')
             if request.data.get('currentLocation'):
+                old_values['currentLocation'] = carrier.currentLocation
                 carrier.currentLocation = request.data.get('currentLocation')
+                changes['currentLocation'] = request.data.get('currentLocation')
             if request.data.get('previousLocation'):
+                old_values['previousLocation'] = carrier.previousLocation
                 carrier.previousLocation = request.data.get('previousLocation')
+                changes['previousLocation'] = request.data.get('previousLocation')
             if request.data.get('dockingAccess'):
+                old_values['dockingAccess'] = carrier.dockingAccess
                 carrier.dockingAccess = request.data.get('dockingAccess')
+                changes['dockingAccess'] = request.data.get('dockingAccess')
             if request.data.get('owner'):
+                old_values['owner'] = carrier.owner
                 carrier.owner = request.data.get('owner')
+                changes['owner'] = request.data.get('owner')
             if request.data.get('ownerDiscordID'):
+                old_values['ownerDiscordID'] = carrier.ownerDiscordID
                 carrier.ownerDiscordID = request.data.get('ownerDiscordID')
+                changes['ownerDiscordID'] = request.data.get('ownerDiscordID')
             if request.data.get('imageURL'):
+                old_values['imageURL'] = carrier.imageURL
                 carrier.imageURL = request.data.get('imageURL')
+                changes['imageURL'] = request.data.get('imageURL')
             if request.data.get('isFlagship'):
+                old_values['isFlagship'] = carrier.isFlagship
                 carrier.isFlagship = request.data.get('isFlagship')
+                changes['isFlagship'] = request.data.get('isFlagship')
+
+            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=request_source, type='carrier-update', oldValue=old_values, newValue=changes)
+
             carrier.save()
             serializer = CarrierSerializer(carrier)
+
             return Response({'carrier': serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
         if request.data.get('id'):
@@ -194,6 +246,9 @@ class carrier(APIView):
 
     def delete(self, request):
         carrier_id = request.GET.get('id')
+        request_source = "other"
+        if request.GET.get('source'):
+            request_source = request.GET.get('source')
         if not carrier_id:
             return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
         if not Carrier.objects.filter(id=carrier_id):
@@ -201,6 +256,9 @@ class carrier(APIView):
         carrier = Carrier.objects.get(id=carrier_id)
         if not checkForWriteAccess(request, carrier_id):
             return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=request_source, type='carrier-delete', oldValue=carrier, newValue=None)
+        
         carrier.delete()
         return Response({'success': 'carrier successfully deleted'}, status=status.HTTP_204_NO_CONTENT)
             
