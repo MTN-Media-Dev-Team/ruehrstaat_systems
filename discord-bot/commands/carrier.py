@@ -1,4 +1,4 @@
-from nextcord import Interaction, SlashOption, SelectOption
+from nextcord import Interaction, SlashOption, SelectOption, Embed
 from nextcord.ui import Select, View
 
 from embeds import getCarrierInfoEmbed
@@ -31,5 +31,15 @@ def initCarrierCommands(bot, args_dict):
         view.add_item(selectCarrier)
         selectmessage = await interaction.response.send_message("Select a Carrier", view=view, ephemeral=True)
 
-
+    
+    @bot.slash_command(name="carrierlist", description="Get a list of all Squadron Carriers", guild_ids=[TESTING_GUILD_ID]) #Maybe push to Admin only! (ID and Name of Carrier visible)
+    async def carrierlist(interaction: Interaction):
+        # get all carrier names
+        carrierNames = getAllCarrierNames()
+        embed = Embed(title="All Squadron Carriers", description="Here is a list of all Squadron Carriers", color=0xffb400)
         
+        for carrier in carrierNames:
+            embed.add_field(name=carrierNames[carrier], value=f"ID: {carrier}", inline=False)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
