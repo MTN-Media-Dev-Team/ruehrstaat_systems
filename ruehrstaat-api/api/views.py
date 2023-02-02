@@ -64,7 +64,7 @@ class carrierJump(APIView):
             carrier.currentLocation = body
 
             carrier.save()
-            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=request_source, type='jump', oldValue=carrier.previousLocation, newValue=carrier.currentLocation)
+            ApiLog.objects.create(user=ApiKey.objects.get_from_key(request.META["HTTP_AUTHORIZATION"].split()[1]), carrier=carrier, source=request_source, type='jump', oldValue=carrier.previousLocation, newValue=carrier.currentLocation)
 
             return Response({'success': 'Carrier jump noted'}, status=status.HTTP_200_OK)
 
@@ -73,7 +73,7 @@ class carrierJump(APIView):
             carrier.previousLocation = None
 
             carrier.save()
-            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=request_source, type='jumpcancel', oldValue=carrier.currentLocation, newValue=carrier.previousLocation)
+            ApiLog.objects.create(key=ApiKey.objects.get_from_key(request.META["HTTP_AUTHORIZATION"].split()[1]), carrier=carrier, source=request_source, type='jumpcancel', oldValue=carrier.currentLocation, newValue=carrier.previousLocation)
 
             return Response({'success': 'Carrier jump cancelled'}, status=status.HTTP_200_OK)
         else:
@@ -102,7 +102,7 @@ class carrierPermission(APIView):
         
         new_access = request.data.get('access')
 
-        ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=request_source, type='permission', oldValue=carrier.dockingAccess, newValue=new_access, discorduser=request_discord_id)
+        ApiLog.objects.create(user=ApiKey.objects.get_from_key(request.META["HTTP_AUTHORIZATION"].split()[1]), carrier=carrier, source=request_source, type='permission', oldValue=carrier.dockingAccess, newValue=new_access, discorduser=request_discord_id)
 
         carrier.dockingAccess = new_access
         carrier.save()
@@ -141,14 +141,14 @@ class carrierService(APIView):
             return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
         if operation == 'activate' or operation == 'resume':
 
-            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=source, type='service-activate', oldValue=carrier.services, newValue=service, discorduser=request_discord_id)
+            ApiLog.objects.create(user=ApiKey.objects.get_from_key(request.META["HTTP_AUTHORIZATION"].split()[1]), carrier=carrier, source=source, type='service-activate', oldValue=carrier.services, newValue=service, discorduser=request_discord_id)
 
             carrier.services.add(service)
             carrier.save()
             return Response({'success': 'Service activated'}, status=status.HTTP_200_OK)
         elif operation == 'deactivate' or operation == 'pause':
 
-            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=source, type='service-deactivate', oldValue=carrier.services, newValue=service, discorduser=request_discord_id)
+            ApiLog.objects.create(user=ApiKey.objects.get_from_key(request.META["HTTP_AUTHORIZATION"].split()[1]), carrier=carrier, source=source, type='service-deactivate', oldValue=carrier.services, newValue=service, discorduser=request_discord_id)
 
             carrier.services.remove(service)
             carrier.save()
@@ -237,7 +237,7 @@ class carrier(APIView):
                 carrier.isFlagship = request.data.get('isFlagship')
                 changes['isFlagship'] = request.data.get('isFlagship')
 
-            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=request_source, type='carrier-update', oldValue=old_values, newValue=changes, discord_id=request_discord_id)
+            ApiLog.objects.create(user=ApiKey.objects.get_from_key(request.META["HTTP_AUTHORIZATION"].split()[1]), carrier=carrier, source=request_source, type='carrier-update', oldValue=old_values, newValue=changes, discorduser=request_discord_id)
 
             carrier.save()
             serializer = CarrierSerializer(carrier)
@@ -271,7 +271,7 @@ class carrier(APIView):
         if not checkForWriteAccess(request, carrier_id):
             return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=request_source, type='carrier-delete', oldValue=carrier, newValue=None)
+        ApiLog.objects.create(user=ApiKey.objects.get_from_key(request.META["HTTP_AUTHORIZATION"].split()[1]), carrier=carrier, source=request_source, type='carrier-delete', oldValue=carrier, newValue=None)
         
         carrier.delete()
         return Response({'success': 'carrier successfully deleted'}, status=status.HTTP_204_NO_CONTENT)
