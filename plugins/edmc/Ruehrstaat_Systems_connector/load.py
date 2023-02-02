@@ -15,7 +15,7 @@ except ImportError:
 this = sys.modules[__name__]
 this.plugin_name = "RSTAPI"
 this.plugin_url = "https://github.com/MTN-Media-Dev-Team/ruehrstaat_edmc_plugin"
-this.version_info = (0, 1, 1)
+this.version_info = (0, 1, 2)
 this.version = ".".join(map(str, this.version_info))
 this.api_url = "https://api.ruehrstaat.de/api/v1"
 
@@ -96,11 +96,13 @@ def journal_entry(cmdr: str, is_beta: bool, system: Optional[str], station: Opti
                 "id": entry['CarrierID'],
                 "type": "jump",
                 "body": entry['Body'],
+                "source": "edmc",
             }
         else:
             put = {
                 "id": entry['CarrierID'],
-                "type": "cancel"
+                "type": "cancel",
+                "source": "edmc",
             }
         with requests.put(this.api_url + '/carrierJump', json=put, headers=headers) as response:
             if response.status_code == 200:
@@ -114,6 +116,7 @@ def journal_entry(cmdr: str, is_beta: bool, system: Optional[str], station: Opti
         put = {
             "id": entry['CarrierID'],
             "access": entry['DockingAccess'],
+            "source": "edmc",
         }
         with requests.put(this.api_url + '/carrierPermission', json=put, headers=headers) as response:
             if response.status_code == 200:
@@ -128,6 +131,7 @@ def journal_entry(cmdr: str, is_beta: bool, system: Optional[str], station: Opti
             "id": entry['CarrierID'],
             "operation": entry['Operation'],
             "service": entry['CrewRole'],
+            "source": "edmc",
         }
         with requests.put(this.api_url + '/carrierService', json=put, headers=headers) as response:
             if response.status_code == 200:
