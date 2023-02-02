@@ -31,3 +31,18 @@ def getCarrierInfoEmbed(carrier_id):
     else:
         view.add_item(Button(label="See all carriers", url=f"https://ruehrstaat.de/carrier/", style=ButtonStyle.success))
     return embed, view
+
+
+
+def getCarrierNameListEmbed(carrierList):
+    embed = Embed(title="Carrier List")
+    for carrier in carrierList:
+        embed.add_field(name=carrier, value=f"Owner: {carrier.owner} - Callsign: {carrier.callsign}", inline=False)
+    # make embed side color #ffb400
+    embed.colour = 0xffb400
+    # set footer
+    embed.set_footer(text=f'powered by Ruehrstaat API')
+    # Add carrier url as button
+    view = View()
+    view.add_item(Button(label="See all carriers", url=f"https://ruehrstaat.de/carrier/", style=ButtonStyle.success))
+    return embed, view

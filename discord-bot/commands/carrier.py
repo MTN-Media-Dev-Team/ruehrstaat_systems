@@ -1,7 +1,7 @@
 from nextcord import Interaction, SlashOption, SelectOption, Embed
 from nextcord.ui import Select, View
 
-from embeds import getCarrierInfoEmbed
+from embeds import getCarrierInfoEmbed, getCarrierNameListEmbed
 from caching import getCarrierIdByName, getAllCarrierNames
 
 def initCarrierCommands(bot, args_dict):
@@ -36,10 +36,7 @@ def initCarrierCommands(bot, args_dict):
     async def carrierlist(interaction: Interaction):
         # get all carrier names
         carrierNames = getAllCarrierNames()
-        embed = Embed(title="All Squadron Carriers", description="Here is a list of all Squadron Carriers", color=0xffb400)
-        
-        for carrier in carrierNames:
-            embed.add_field(name=carrierNames[carrier], value=f"ID: {carrier}", inline=False)
+        embed = getCarrierNameListEmbed(carrierNames)
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
