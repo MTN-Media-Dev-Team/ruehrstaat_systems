@@ -85,3 +85,7 @@ def getAllCarrierNamesAsList():
     for carrier in cached_carriers:
         carrier_names.append(cached_carriers[carrier].name)
     return carrier_names
+
+def getAllCarrierObjects():
+    return cached_carriers
+

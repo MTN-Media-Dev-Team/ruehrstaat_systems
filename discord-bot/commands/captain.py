@@ -4,6 +4,8 @@ from nextcord.ui import Select, View, TextInput, Modal
 from helpfunctions import formatCarrierName
 from caching import getCarrierObjectByName
 
+from permission import isUserAdmin
+
 def initCaptainCommands(bot, args_dict):
         
     TESTING_GUILD_ID = args_dict["TESTING_GUILD_ID"]
@@ -15,6 +17,12 @@ def initCaptainCommands(bot, args_dict):
             await interaction.response.send_message("Carrier not found!", ephemeral=True)
             return
 
+        carrier = getCarrierObjectByName(carrierName)
+
+        if not isUserAdmin(interaction.user) and interaction.user.id != carrier.ownerDiscordID:
+            await interaction.response.send_message("You are not the Captain!", ephemeral=True)
+            return
+
         options = ["Edit Location"]
 
         selectOption = Select(placeholder="Select an option", options=[SelectOption(label=option, value=option) for option in options])
@@ -23,7 +31,6 @@ def initCaptainCommands(bot, args_dict):
         async def callback(interaction: Interaction):
             # get carrier id
             option = selectOption.values[0]
-            carrier = getCarrierObjectByName(carrierName)
             if carrier == None:
                 await interaction.response.send_message("Carrier not found!", ephemeral=True)
                 return

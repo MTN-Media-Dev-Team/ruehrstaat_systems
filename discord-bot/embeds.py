@@ -34,10 +34,14 @@ def getCarrierInfoEmbed(carrier_id):
 
 
 
-def getCarrierNameListEmbed(carrierList):
+def getCarrierListEmbed(carriers, isAdmin=False):
     embed = Embed(title="Carrier List")
-    for carrier in carrierList:
-        embed.add_field(name=carrier, value=f"Owner: {carrier.owner} - Callsign: {carrier.callsign}", inline=False)
+    for carrierid in carriers:
+        carrier = carriers[carrierid]
+        fieldtext = f"Owner: {carrier.owner} - Callsign: {carrier.callsign}"
+        if isAdmin:
+            fieldtext += f" - ID: {carrier.id}"
+        embed.add_field(name=carrier.name, value=fieldtext, inline=False)
     # make embed side color #ffb400
     embed.colour = 0xffb400
     # set footer
