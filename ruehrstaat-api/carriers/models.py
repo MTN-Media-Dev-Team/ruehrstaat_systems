@@ -24,7 +24,8 @@ class Carrier(models.Model):
     callsign = models.CharField(max_length=255, unique=True, null=False, blank=False)
     currentLocation = models.CharField(max_length=255, null=False, blank=False)
     previousLocation = models.CharField(max_length=255, null=True, blank=True)
-    services = models.ManyToManyField(CarrierService)
+    # carrier services can be no to all avaialable
+    services = models.ManyToManyField(CarrierService, blank=True)
     
     # docking access can be ONE of the following: all/none/friends/squadron/squadronfriends and ONLY allow one of these values
     DOCKING_ACCESS_CHOICES = [
