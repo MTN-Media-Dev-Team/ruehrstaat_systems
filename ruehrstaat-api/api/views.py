@@ -88,6 +88,10 @@ class carrierPermission(APIView):
         if request.data.get('source'):
             request_source = request.data.get('source')
 
+        request_discord_id = None
+        if request.data.get('discord_id'):
+            request_discord_id = request.data.get('discord_id')
+
         if not carrier_id:
             return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
         if not Carrier.objects.filter(id=carrier_id):
@@ -98,7 +102,7 @@ class carrierPermission(APIView):
         
         new_access = request.data.get('access')
 
-        ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=request_source, type='permission', oldValue=carrier.dockingAccess, newValue=new_access)
+        ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=request_source, type='permission', oldValue=carrier.dockingAccess, newValue=new_access, discorduser=request_discord_id)
 
         carrier.dockingAccess = new_access
         carrier.save()
@@ -116,6 +120,11 @@ class carrierService(APIView):
         source = "other"
         if request.data.get('source'):
             source = request.data.get('source')
+
+        request_discord_id = None
+        if request.data.get('discord_id'):
+            request_discord_id = request.data.get('discord_id')
+
         if not carrier_id:
             return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
         if not operation:
@@ -132,14 +141,14 @@ class carrierService(APIView):
             return Response({'error': 'Carrier not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
         if operation == 'activate' or operation == 'resume':
 
-            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=source, type='service-activate', oldValue=carrier.services, newValue=service)
+            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=source, type='service-activate', oldValue=carrier.services, newValue=service, discorduser=request_discord_id)
 
             carrier.services.add(service)
             carrier.save()
             return Response({'success': 'Service activated'}, status=status.HTTP_200_OK)
         elif operation == 'deactivate' or operation == 'pause':
 
-            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=source, type='service-deactivate', oldValue=carrier.services, newValue=service)
+            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=source, type='service-deactivate', oldValue=carrier.services, newValue=service, discorduser=request_discord_id)
 
             carrier.services.remove(service)
             carrier.save()
@@ -175,6 +184,10 @@ class carrier(APIView):
         request_source = "other"
         if request.data.get('source'):
             request_source = request.data.get('source')
+
+        request_discord_id = None
+        if request.data.get('discord_id'):
+            request_discord_id = request.data.get('discord_id')
         if carrier_id:
             if not Carrier.objects.filter(id=carrier_id):
                 return Response({'error': 'Invalid carrier id provided, to create a carrier please use POST request'}, status=status.HTTP_400_BAD_REQUEST)
@@ -224,7 +237,7 @@ class carrier(APIView):
                 carrier.isFlagship = request.data.get('isFlagship')
                 changes['isFlagship'] = request.data.get('isFlagship')
 
-            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=request_source, type='carrier-update', oldValue=old_values, newValue=changes)
+            ApiLog.objects.create(key=ApiKey.objects.get_from_request(request), carrier=carrier, source=request_source, type='carrier-update', oldValue=old_values, newValue=changes, discord_id=request_discord_id)
 
             carrier.save()
             serializer = CarrierSerializer(carrier)
@@ -249,6 +262,7 @@ class carrier(APIView):
         request_source = "other"
         if request.GET.get('source'):
             request_source = request.GET.get('source')
+        
         if not carrier_id:
             return Response({'error': 'No carrier id provided'}, status=status.HTTP_400_BAD_REQUEST)
         if not Carrier.objects.filter(id=carrier_id):
