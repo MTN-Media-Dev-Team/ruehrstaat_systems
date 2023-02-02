@@ -44,7 +44,7 @@ def initCaptainCommands(bot, args_dict):
                         self.add_item(self.textInput)
 
                     async def callback(self, interaction: Interaction):
-                        carrier.setCarrierLocation(self.textInput.value)
+                        carrier.setCarrierLocation(self.textInput.value, interaction.user.id)
                         await interaction.response.send_message(f"Location of carrier {carrierName} changed to {self.textInput.value}!", ephemeral=True) 
 
                 await interaction.response.send_modal(InputModal())

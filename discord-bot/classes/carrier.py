@@ -55,24 +55,24 @@ class Carrier:
             if service["name"] in CARRIER_SERVICES:
                 self.services.append(CARRIER_SERVICES[service["name"]])
 
-    def setCarrierOwnerDiscordID(self, ownerDiscordID):
+    def setCarrierOwnerDiscordID(self, ownerDiscordID, discord_id):
         self.ownerDiscordID = ownerDiscordID
         # write to api
         url = 'https://api.ruehrstaat.de/api/v1/carrier'
         headers = {'Authorization': 'Bearer ' + os.getenv("WRITE_API_KEY")}
         data = {
             "id": self.id,
-            "ownerDiscordID": self.ownerDiscordID
+            "ownerDiscordID": self.ownerDiscordID,
+            "source": "discord",
+            "discord_id": discord_id
         }
-        print(data)
         response = requests.put(url, headers=headers, data=data)
-        print(response)
         if response.status_code == 200:
             logging.debug("Successfully updated carrier ownerDiscordID in API")
         else:
             logging.error("Error updating carrier ownerDiscordID in API")
 
-    def setCarrierLocation(self, location):
+    def setCarrierLocation(self, location, discord_id):
         self.previousLocation = self.currentLocation
         self.currentLocation = location
         # write to api
@@ -81,7 +81,9 @@ class Carrier:
         data = {
             "id": self.id,
             "currentLocation": self.currentLocation,
-            "previousLocation": self.previousLocation
+            "previousLocation": self.previousLocation,
+            "source": "discord",
+            "discord_id": discord_id
         }
         response = requests.put(url, headers=headers, data=data)
         if response.status_code == 200:
