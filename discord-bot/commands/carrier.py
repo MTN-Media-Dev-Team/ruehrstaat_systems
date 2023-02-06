@@ -1,8 +1,8 @@
-from nextcord import Interaction, SlashOption, SelectOption
+from nextcord import Interaction, SelectOption
 from nextcord.ui import Select, View
 
 from embeds import getCarrierInfoEmbed, getCarrierListEmbed
-from caching import getCarrierIdByName, getAllCarrierNames, getAllCarrierObjects
+from caching import getAllCarrierNames, getAllCarrierObjects
 
 from permission import isUserAdmin
 
@@ -44,6 +44,9 @@ def initCarrierCommands(bot, args_dict):
         else:
             embed, view = getCarrierListEmbed(carriers)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+    
+    
 
     
 

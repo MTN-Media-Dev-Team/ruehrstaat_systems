@@ -22,3 +22,6 @@ def initAdminCommands(bot, args_dict):
         carrier = getCarrierObjectByID(carrierid)
         carrier.setCarrierOwnerDiscordID(captain.id, interaction.user.id)
         await interaction.response.send_message(f"Carrier Owner for {carrierName} set!", ephemeral=True)
+
+    
+    
