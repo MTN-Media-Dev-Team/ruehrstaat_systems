@@ -49,7 +49,7 @@ async def on_ready():
     logging.info("------")
 
 from commands.admin import initAdminCommands
-initAdminCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID})
+initAdminCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID, "db": db})
 
 from commands.carrier import initCarrierCommands
 initCarrierCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID})
@@ -60,8 +60,8 @@ initFunCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID})
 from commands.captain import initCaptainCommands
 initCaptainCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID})
 
-from commands.embed_static import initEmbedCommands
-initEmbedCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID, "db": db})
+from commands.market import initMarketCommands
+initMarketCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID})
 
 bot.run(BOT_TOKEN)
 
