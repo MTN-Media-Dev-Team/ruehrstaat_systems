@@ -61,7 +61,7 @@ from commands.captain import initCaptainCommands
 initCaptainCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID})
 
 from commands.embed_static import initEmbedCommands
-initEmbedCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID})
+initEmbedCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID, "cursor": db.cursor()})
 
 bot.run(BOT_TOKEN)
 

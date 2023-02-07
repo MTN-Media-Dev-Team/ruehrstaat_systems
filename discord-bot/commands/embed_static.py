@@ -1,6 +1,5 @@
 from nextcord import Interaction, SelectOption
 from nextcord.ui import Select, View
-from database import BotDB
 from caching import getAllCarrierNames, getCarrierObjectByID
 import logging
 
@@ -12,6 +11,7 @@ def initEmbedCommands(bot, args_dict):
 
 
     TESTING_GUILD_ID = args_dict["TESTING_GUILD_ID"]
+    cursor = args_dict["cursor"]
     # Carrier channel command to set the channel for the static embeds
 
     @bot.slash_command(name="setcarrierchannel", description="Sets the channel for the static embeds", guild_ids=[TESTING_GUILD_ID])
@@ -31,8 +31,6 @@ def initEmbedCommands(bot, args_dict):
             await selectmessage.delete()
             channel = interaction.channel
             guild_id = interaction.guild.id
-            db = BotDB()
-            cursor = db.cursor
             guild_id = interaction.guild.id
             cursor.execute("SELECT * FROM guilds WHERE guild_id = ? AND carrier_id = ?", (guild_id, carrier_id))
             guild = cursor.fetchone()
@@ -40,8 +38,7 @@ def initEmbedCommands(bot, args_dict):
                 cursor.execute("INSERT INTO guilds (guild_id, carrier_channel_id, carrier_id) VALUES (?,?,?)", (guild_id,channel.id,carrier_id))
             else:
                 cursor.execute("UPDATE guilds SET carrier_channel_id = ? WHERE guild_id = ? AND carrier_id = ?", (channel.id, guild_id, carrier_id))                
-            db.connection.commit()
-            db.connection.close()
+            cursor.commit()
             logging.info(f"Carrier channel set to {channel.id} for guild {guild_id}")
             await interaction.response.send_message(f"Carrier Channel Set for Carrier " + getCarrierObjectByID(carrier_id).name, ephemeral=True)
             embed, view = getCarrierInfoStaticEmbed(carrier_id)
@@ -61,9 +58,8 @@ def initEmbedCommands(bot, args_dict):
     
 # carrier refresh method to refresh the static embeds with args from the websocket event or nothing to refresh all
 def refreshCarrierEmbeds(bot, args_dict, carrier_id=None):
+    cursor = args_dict["cursor"]
     logging.info("refreshing carrier embeds")
-    db = BotDB()
-    cursor = db.cursor
     cursor.execute("SELECT * FROM guilds WHERE carrier_id = ?", (carrier_id))
     db_object = cursor.fetchone()
     embed, view = getCarrierInfoStaticEmbed(carrier_id)
