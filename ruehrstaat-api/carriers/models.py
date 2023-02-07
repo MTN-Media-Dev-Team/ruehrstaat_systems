@@ -46,6 +46,7 @@ class Carrier(models.Model):
     CARRIER_CATEGORY_CHOICES = [
         ('flagship', 'Flagship'),
         ('freighter', 'Freighter'),
+        ('supportvessel', 'Support Vessel'),
         ('other', 'Other'),
     ]
     category = models.CharField(max_length=255, choices=CARRIER_CATEGORY_CHOICES, default='other')

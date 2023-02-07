@@ -44,9 +44,10 @@ def getCarrierObjectByID(carrierID):
     else:
         return __getCarrierInfo(carrierID)
 
-def getCarrierObjectByName(carrierName):
-    from helpfunctions import formatCarrierName
-    carrierName = formatCarrierName(carrierName)
+def getCarrierObjectByName(carrierName, alreadyFormatted=False):
+    if not alreadyFormatted:
+        from helpfunctions import formatCarrierName
+        carrierName = formatCarrierName(carrierName)
     if not carrierName:
         return None
     for carrier in cached_carriers:
@@ -58,9 +59,10 @@ def getCarrierObjectByName(carrierName):
             return cached_carriers[carrier]
     return None
 
-def getCarrierIdByName(carrierName):
-    from helpfunctions import formatCarrierName
-    carrierName = formatCarrierName(carrierName)
+def getCarrierIdByName(carrierName, alreadyFormatted=False):
+    if not alreadyFormatted:
+        from helpfunctions import formatCarrierName
+        carrierName = formatCarrierName(carrierName)
     if not carrierName:
         return None
     for carrier in cached_carriers:
@@ -90,4 +92,7 @@ def getAllCarrierObjects():
     return cached_carriers
 
 
-
+def getAllMarketNames(): # TODO: implement getAllMarketNames()
+    print("Nothing to see here yet")
+    marketitemname = "Placeholder"
+    return marketitemname
