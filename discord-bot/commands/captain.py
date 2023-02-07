@@ -17,7 +17,7 @@ def initCaptainCommands(bot, args_dict):
             await interaction.response.send_message("Carrier not found!", ephemeral=True)
             return
 
-        carrier = getCarrierObjectByName(carrierName)
+        carrier = getCarrierObjectByName(carrierName, True)
 
         if not isUserAdmin(interaction.user) and interaction.user.id != carrier.ownerDiscordID:
             await interaction.response.send_message("You are not the Captain!", ephemeral=True)
