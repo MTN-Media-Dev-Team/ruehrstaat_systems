@@ -232,10 +232,10 @@ class carrier(APIView):
                 old_values['imageURL'] = carrier.imageURL
                 carrier.imageURL = request.data.get('imageURL')
                 changes['imageURL'] = request.data.get('imageURL')
-            if request.data.get('isFlagship'):
-                old_values['isFlagship'] = carrier.isFlagship
-                carrier.isFlagship = request.data.get('isFlagship')
-                changes['isFlagship'] = request.data.get('isFlagship')
+            if request.data.get('category'):
+                old_values['category'] = carrier.category
+                carrier.category = request.data.get('category')
+                changes['category'] = request.data.get('category')
 
             ApiLog.objects.create(user=ApiKey.objects.get_from_key(request.META["HTTP_AUTHORIZATION"].split()[1]), carrier=carrier, source=request_source, type='carrier-update', oldValue=old_values, newValue=changes, discorduser=request_discord_id)
 

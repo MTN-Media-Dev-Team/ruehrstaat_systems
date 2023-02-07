@@ -26,7 +26,7 @@ def getCarrierInfoEmbed(carrier_id):
     embed.set_footer(text=f'last updated: {datetime.fromtimestamp(carrier.last_update).strftime("%d.%m.%Y %H:%M")} - powered by Ruehrstaat API')
     # Add carrier url as button
     view = View()
-    if carrier.isFlagship:
+    if carrier.category == "flagship":
         view.add_item(Button(label="Carrier Website", url=f"https://ruehrstaat.de/carrier/{carrier.name.replace(' ', '-')}", style=ButtonStyle.success))
     else:
         view.add_item(Button(label="See all carriers", url=f"https://ruehrstaat.de/carrier/", style=ButtonStyle.success))
@@ -53,7 +53,7 @@ def getCarrierInfoStaticEmbed(carrier_id):
     embed.set_footer(text=f'last updated: {datetime.fromtimestamp(carrier.last_update).strftime("%d.%m.%Y %H:%M")} - powered by Ruehrstaat API')
     # Add carrier url as button
     view = View()
-    if carrier.isFlagship:
+    if carrier.category == "flagship":
         view.add_item(Button(label="Carrier Website", url=f"https://ruehrstaat.de/carrier/{carrier.name.replace(' ', '-')}", style=ButtonStyle.success))
     else:
         view.add_item(Button(label="See all carriers", url=f"https://ruehrstaat.de/carrier/", style=ButtonStyle.success))

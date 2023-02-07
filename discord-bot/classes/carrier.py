@@ -31,7 +31,7 @@ class Carrier:
         self.services = []
         self.last_update = time.time()
         self.imageURL = None
-        self.isFlagship = False
+        self.category = None
 
     def setCarrierData(self, carrier_data):
         self.name = carrier_data["name"]
@@ -44,7 +44,7 @@ class Carrier:
         if carrier_data["ownerDiscordID"]:
             self.ownerDiscordID = int(carrier_data["ownerDiscordID"])
         self.imageURL = carrier_data["imageURL"]
-        self.isFlagship = bool(carrier_data["isFlagship"])
+        self.category = carrier_data["category"]
 
         # save current timestamp as last update
         self.last_update = time.time()
