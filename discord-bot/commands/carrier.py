@@ -1,8 +1,8 @@
-from nextcord import Interaction, SlashOption, SelectOption
+from nextcord import Interaction, SelectOption
 from nextcord.ui import Select, View
 
 from embeds import getCarrierInfoEmbed, getCarrierListEmbed
-from caching import getCarrierIdByName, getAllCarrierNames, getAllCarrierObjects
+from caching import getAllCarrierNames, getAllCarrierObjects
 
 from permission import isUserAdmin
 
@@ -37,13 +37,11 @@ def initCarrierCommands(bot, args_dict):
     @bot.slash_command(name="carrierlist", description="Get a list of all Squadron Carriers", guild_ids=[TESTING_GUILD_ID])
     async def carrierlist(interaction: Interaction):
         carriers = getAllCarrierObjects()
-
-        # if user as admin perm
-        if isUserAdmin(interaction.user):
-            embed, view = getCarrierListEmbed(carriers, isAdmin=True)
-        else:
-            embed, view = getCarrierListEmbed(carriers)
+        embed, view = getCarrierListEmbed(carriers, isAdmin=isUserAdmin(interaction.user))
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+    
+    
 
     
 

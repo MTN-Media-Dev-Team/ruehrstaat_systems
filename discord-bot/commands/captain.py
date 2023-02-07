@@ -54,7 +54,7 @@ def initCaptainCommands(bot, args_dict):
         view.add_item(selectOption)
         selectmessage = await interaction.response.send_message(f"Select an option for carrier {carrierName}", view=view, ephemeral=True)
   
-        
+            
     
 
 

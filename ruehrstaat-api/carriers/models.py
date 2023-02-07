@@ -41,7 +41,14 @@ class Carrier(models.Model):
     ownerDiscordID = models.CharField(max_length=255, null=True, blank=True)
 
     imageURL = models.URLField(max_length=255, null=True, blank=True)
-    isFlagship = models.BooleanField(default=False)
+
+    # carrier category
+    CARRIER_CATEGORY_CHOICES = [
+        ('flagship', 'Flagship'),
+        ('freighter', 'Freighter'),
+        ('other', 'Other'),
+    ]
+    category = models.CharField(max_length=255, choices=CARRIER_CATEGORY_CHOICES, default='other')
 
     def __str__(self):
         return self.name
