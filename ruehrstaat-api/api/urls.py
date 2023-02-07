@@ -9,4 +9,5 @@ urlpatterns = [
     path('carrierPermission', views.carrierPermission.as_view(), name='carrierPermission'),
     path('carrierService', views.carrierService.as_view(), name='carrierService'),
     path('getAllServices', views.getAllServices().as_view(), name='getAllServices'),
+    path('getCarrierInfo', views.getCarrierInfo().as_view(), name='getCarrierInfo'),
 ]

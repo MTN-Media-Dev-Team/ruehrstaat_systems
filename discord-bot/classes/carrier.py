@@ -2,11 +2,14 @@ import json, os, requests, logging, time
 
 from .service import Service as CarrierService
 
+API_URL = 'https://api.ruehrstaat.de/api/v1/'
+
 CARRIER_SERVICES = {}
+CARRIER_INFO = {}
 
 # request list of services from api
 def getServices():
-    url = 'https://api.ruehrstaat.de/api/v1/getAllServices'
+    url = API_URL + 'getAllServices'
     headers = {'Authorization': 'Bearer ' + os.getenv("READ_API_KEY")}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
@@ -17,6 +20,35 @@ def getServices():
     else:
         return None
 getServices()
+
+def getCarrierInfo():
+    url = API_URL + 'getCarrierInfo?type=docking'
+    headers = {'Authorization': 'Bearer ' + os.getenv("READ_API_KEY")}
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        CARRIER_INFO["dockingAccess"] = json.loads(response.content)["dockingAccess"]
+    else:
+        CARRIER_INFO["dockingAccess"] = {}
+        return None
+    
+    url = API_URL + 'getCarrierInfo?type=category'
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        CARRIER_INFO["category"] = json.loads(response.content)["category"]
+    else:
+        CARRIER_INFO["category"] = {}
+        return None
+    
+    # log categories and docking access for debugging
+    logging.info("Categories:")
+    for category in CARRIER_INFO["category"]:
+        logging.info(CARRIER_INFO["category"][category])
+    logging.info("Docking Access:")
+    for access in CARRIER_INFO["dockingAccess"]:
+        logging.info(CARRIER_INFO["dockingAccess"][access])
+
+getCarrierInfo()
+
 
 class Carrier:
     def __init__(self, carrier_id):
@@ -38,13 +70,24 @@ class Carrier:
         self.callsign = carrier_data["callsign"]
         self.currentLocation = carrier_data["currentLocation"]
         self.previousLocation = carrier_data["previousLocation"]
-        self.dockingAccess = carrier_data["dockingAccess"]
+        
+        if carrier_data["dockingAccess"] in CARRIER_INFO["dockingAccess"]:
+            self.dockingAccess = CARRIER_INFO["dockingAccess"][carrier_data["dockingAccess"]]
+
+        # log for debugging
+        logging.debug("Carrier docking access: " + str(self.dockingAccess))
+
         self.owner = carrier_data["owner"]
 
         if carrier_data["ownerDiscordID"]:
             self.ownerDiscordID = int(carrier_data["ownerDiscordID"])
         self.imageURL = carrier_data["imageURL"]
-        self.category = carrier_data["category"]
+        
+        if carrier_data["category"] in CARRIER_INFO["category"]:
+            self.category = CARRIER_INFO["category"][carrier_data["category"]]
+
+        # log for debugging
+        logging.debug("Carrier category: " + str(self.category))
 
         # save current timestamp as last update
         self.last_update = time.time()
@@ -58,7 +101,7 @@ class Carrier:
     def setCarrierOwnerDiscordID(self, ownerDiscordID, discord_id):
         self.ownerDiscordID = ownerDiscordID
         # write to api
-        url = 'https://api.ruehrstaat.de/api/v1/carrier'
+        url = API_URL + 'carrier'
         headers = {'Authorization': 'Bearer ' + os.getenv("WRITE_API_KEY")}
         data = {
             "id": self.id,
@@ -76,7 +119,7 @@ class Carrier:
         self.previousLocation = self.currentLocation
         self.currentLocation = location
         # write to api
-        url = 'https://api.ruehrstaat.de/api/v1/carrier'
+        url = API_URL + 'carrier'
         headers = {'Authorization': 'Bearer ' + os.getenv("WRITE_API_KEY")}
         data = {
             "id": self.id,

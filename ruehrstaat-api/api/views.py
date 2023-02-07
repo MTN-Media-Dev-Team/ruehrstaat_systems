@@ -34,6 +34,22 @@ class getAllServices(APIView):
         serializer = CarrierServicesSerializer(services, many=True)
         return JsonResponse({'services': serializer.data}, safe=False)
 
+class getCarrierInfo(APIView):
+    permission_classes = [HasAPIKey]
+
+    def get(self, request):
+        type = request.GET.get('type')
+        if not type:
+            return Response({'error': 'No type provided'}, status=status.HTTP_400_BAD_REQUEST)
+        if type == 'docking':
+            # get DOCKING_ACCESS_CHOICES from carrier model
+            return JsonResponse({'dockingAccess': Carrier.DOCKING_ACCESS_CHOICES}, safe=False)
+        elif type == 'category':
+            # get CARRIER_CATEGORY_CHOICES from carrier model
+            return JsonResponse({'carrierCategory': Carrier.CARRIER_CATEGORY_CHOICES}, safe=False)
+        else:
+            return Response({'error': 'Invalid type provided'}, status=status.HTTP_400_BAD_REQUEST)
+
 class carrierJump(APIView):
     permission_classes = [HasAPIKey]
 

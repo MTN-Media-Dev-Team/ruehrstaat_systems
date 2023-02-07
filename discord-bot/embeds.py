@@ -2,6 +2,7 @@ from nextcord import Embed, ButtonStyle
 from nextcord.ui import View, Button
 
 from caching import getCarrierObjectByID
+from commands.market import marketitemname, marketitemamount, marketitemvalue 
 
 from datetime import datetime
 
@@ -75,3 +76,7 @@ def getCarrierListEmbed(carriers, isAdmin=False):
     view = View()
     view.add_item(Button(label="See all carriers", url=f"https://ruehrstaat.de/carrier/", style=ButtonStyle.success))
     return embed, view
+
+
+def getMarketEmbed():
+    print("placeholder")
