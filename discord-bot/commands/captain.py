@@ -4,7 +4,42 @@ from nextcord.ui import Select, View, TextInput, Modal
 from helpfunctions import formatCarrierName
 from caching import getCarrierObjectByName
 
+from classes.carrier import Carrier, getCarrierInfo
+
 from permission import isUserAdmin
+
+async def captainCommandEditLocation(interaction: Interaction, carrier: Carrier):
+    class InputModal(Modal):
+        def __init__(self):
+            super().__init__(title="Enter a new Location")
+            self.textInput = TextInput(label="Enter a new Location", placeholder="Sol", custom_id="textinput")
+            self.add_item(self.textInput)
+
+        async def callback(self, interaction: Interaction):
+            success = carrier.setCarrierLocation(self.textInput.value, interaction.user.id)
+            if success:
+                await interaction.response.send_message(f"Location of carrier {carrier.name} changed to {self.textInput.value}!", ephemeral=True) 
+            else:
+                await interaction.response.send_message(f"Location of carrier {carrier.name} could not be changed!", ephemeral=True)
+
+    await interaction.response.send_modal(InputModal())
+
+async def captainCommandEditDockingAccess(interaction: Interaction, carrier: Carrier):
+    options = getCarrierInfo()["dockingAccess"]
+    # options is a dict of {name: {name: "name", label: "label"}}
+    selectmessage = None
+    selectOption = Select(placeholder="Select an option", options=[SelectOption(label=option["label"], value=option["name"]) for option in options.values()])
+    async def callback(interaction: Interaction):
+        await selectmessage.delete()
+        success = carrier.setCarrierDockingAccess(selectOption.values[0], interaction.user.id)
+        if success:
+            await interaction.response.send_message(f'Docking Access of carrier {carrier.name} changed to {options[selectOption.values[0]]["label"]}!', ephemeral=True)
+        else:
+            await interaction.response.send_message(f"Docking Access of carrier {carrier.name} could not be changed!", ephemeral=True)
+    selectOption.callback = callback
+    view = View()
+    view.add_item(selectOption)
+    selectmessage = await interaction.response.send_message(f"Select a new Docking Access for {carrier.name}", view=view, ephemeral=True)
 
 def initCaptainCommands(bot, args_dict):
         
@@ -23,7 +58,7 @@ def initCaptainCommands(bot, args_dict):
             await interaction.response.send_message("You are not the Captain!", ephemeral=True)
             return
 
-        options = ["Edit Location"]
+        options = ["Edit Location", "Edit Docking Access"]
 
         selectOption = Select(placeholder="Select an option", options=[SelectOption(label=option, value=option) for option in options])
         selectmessage = None
@@ -34,20 +69,11 @@ def initCaptainCommands(bot, args_dict):
             if carrier == None:
                 await interaction.response.send_message("Carrier not found!", ephemeral=True)
                 return
+            await selectmessage.delete()
             if option == "Edit Location":
-                await selectmessage.delete()
-
-                class InputModal(Modal):
-                    def __init__(self):
-                        super().__init__(title="Enter a new Location")
-                        self.textInput = TextInput(label="Enter a new Location", placeholder="Sol", custom_id="textinput")
-                        self.add_item(self.textInput)
-
-                    async def callback(self, interaction: Interaction):
-                        carrier.setCarrierLocation(self.textInput.value, interaction.user.id)
-                        await interaction.response.send_message(f"Location of carrier {carrierName} changed to {self.textInput.value}!", ephemeral=True) 
-
-                await interaction.response.send_modal(InputModal())
+                await captainCommandEditLocation(interaction, carrier)
+            elif option == "Edit Docking Access":
+                await captainCommandEditDockingAccess(interaction, carrier)
 
         selectOption.callback = callback
         view = View()

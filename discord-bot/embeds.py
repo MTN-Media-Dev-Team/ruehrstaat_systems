@@ -79,8 +79,8 @@ def getCarrierListEmbed(carriers, isAdmin=False):
 
 def getMarketEmbed(carrierobject, marketitemname, marketitemamount, marketitemvalue):
     embed = Embed(title="Market")
-    embed.add_field(name= "Carrier", value= {carrierobject.name} - {carrierobject.callsign})
-    embed.add_field(name="Item", value=marketitemname, inline=True)
+    embed.add_field(name= "Carrier", value=f"{carrierobject.name} - {carrierobject.callsign}")
+    embed.add_field(name="Item", value=marketitemname, inline=False)
     embed.add_field(name="Amount", value=marketitemamount, inline=True)
     embed.add_field(name="Value", value=marketitemvalue, inline=True)
     # make embed side color #ffb400

@@ -22,7 +22,7 @@ def getServices():
         return None
 getServices()
 
-def getCarrierInfo():
+def __getCarrierInfo():
     url = API_URL + 'getCarrierInfo?type=docking'
     headers = {'Authorization': 'Bearer ' + os.getenv("READ_API_KEY")}
     response = requests.get(url, headers=headers)
@@ -41,10 +41,10 @@ def getCarrierInfo():
     else:
         CARRIER_INFO["category"] = {}
         return None
+__getCarrierInfo()
 
-    
-
-getCarrierInfo()
+def getCarrierInfo():
+    return CARRIER_INFO
 
 
 class Carrier:
@@ -124,6 +124,28 @@ class Carrier:
             return True
         else:
             logging.error("Error updating carrier location in API")
+            return False
+        
+    def setCarrierDockingAccess(self, dockingAccess, discord_id):
+        if not dockingAccess in CARRIER_INFO["dockingAccess"]:
+            logging.error("Invalid dockingAccess: " + dockingAccess)
+            return False
+        self.dockingAccess = CARRIER_INFO["dockingAccess"][dockingAccess]
+        # write to api
+        url = API_URL + 'carrier'
+        headers = {'Authorization': 'Bearer ' + os.getenv("WRITE_API_KEY")}
+        data = {
+            "id": self.id,
+            "dockingAccess": self.dockingAccess["name"],
+            "source": "discord",
+            "discord_id": discord_id
+        }
+        response = requests.put(url, headers=headers, data=data)
+        if response.status_code == 200:
+            logging.debug("Successfully updated carrier dockingAccess in API")
+            return True
+        else:
+            logging.error("Error updating carrier dockingAccess in API")
             return False
         
 
