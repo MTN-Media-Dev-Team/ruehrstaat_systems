@@ -15,9 +15,9 @@ class Market:
             self.embed.add_field(name="Carrier buys for:  ", value=marketitemvalue, inline=True)
         else:
             self.embed.add_field(name="Carrier sells for:  ", value=marketitemvalue, inline=True)
-        self.embed.add_field(name="Station", value=station, inline=True)
+        self.embed.add_field(name="Station", value=station, inline=False)
         self.embed.add_field(name="System", value=system, inline=True)
         self.embed.set_image(url=carrier.imageURL)
-        self.embed.colour = 0xffb400
+        self.embed.colour = 0xb53114
         self.embed.set_footer(text=f'powered by Ruehrstaat API')
         
