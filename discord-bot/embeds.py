@@ -33,6 +33,7 @@ def getCarrierInfoEmbed(carrier_id):
     return embed, view
 
 def getCarrierInfoStaticEmbed(carrier_id):
+    
     carrier = getCarrierObjectByID(carrier_id)
     embed = Embed(title=f"Carrier Info - {carrier.name} - {carrier.callsign}")
     embed.add_field(name="Current Location", value=carrier.currentLocation, inline=True)
@@ -57,6 +58,8 @@ def getCarrierInfoStaticEmbed(carrier_id):
         view.add_item(Button(label="Carrier Website", url=f"https://ruehrstaat.de/carrier/{carrier.name.replace(' ', '-')}", style=ButtonStyle.success))
     else:
         view.add_item(Button(label="See all carriers", url=f"https://ruehrstaat.de/carrier/", style=ButtonStyle.success))
+    getpassengerrole = "Placeholder" # TODO: Passengerroles from DB
+    view.add_item(Button(label="Passenger-Role", style=ButtonStyle.success)) # TODO: Callback function
     return embed, view
 
 def getCarrierListEmbed(carriers, isAdmin=False):
