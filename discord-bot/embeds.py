@@ -77,12 +77,16 @@ def getCarrierListEmbed(carriers, isAdmin=False):
     return embed, view
 
 
-def getMarketEmbed(carrierobject, marketitemname, marketitemamount, marketitemvalue):
-    embed = Embed(title="Market")
-    embed.add_field(name= "Carrier", value=f"{carrierobject.name} - {carrierobject.callsign}")
+def getMarketEmbed(carrier, marketitemname, marketitemamount, marketitemvalue, station, system):
+    embed = Embed(title="TRADE ALERT - Market")
+    embed.add_field(name= "Carrier", value=f"{carrier.name} - {carrier.callsign}", inline=False)
+    embed.add_field(name="Owner", value=f"{carrier.owner}", inline=False)
     embed.add_field(name="Item", value=marketitemname, inline=False)
     embed.add_field(name="Amount", value=marketitemamount, inline=True)
-    embed.add_field(name="Value", value=marketitemvalue, inline=True)
+    embed.add_field(name="Purchase/sale for:  ", value=marketitemvalue, inline=True)
+    embed.add_field(name="Station", value=station, inline=False)
+    embed.add_field(name="System", value=system, inline=False)
+    embed.set_image(url=carrier.imageURL)
     # make embed side color #ffb400
     embed.colour = 0xffb400
     # set footer
