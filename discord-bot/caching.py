@@ -95,7 +95,6 @@ def getAllCarrierObjects():
     return cached_carriers
 
 
-def getAllMarketNames(): # TODO: implement getAllMarketNames()
-    print("Nothing to see here yet")
-    marketitemname = "Placeholder"
+def getAllMarketNames(marketitemname): # TODO: implement getAllMarketNames()
+    # market names from database
     return marketitemname
