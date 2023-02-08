@@ -77,10 +77,11 @@ def getCarrierListEmbed(carriers, isAdmin=False):
     return embed, view
 
 
-def getMarketEmbed(carrier, marketitemname, marketitemamount, marketitemvalue, station, system):
+def getMarketEmbed(carrier, marketitemname, marketitemamount, marketitemvalue, station, system, trade_type):
     embed = Embed(title="TRADE ALERT - Market")
     embed.add_field(name= "Carrier", value=f"{carrier.name} - {carrier.callsign}", inline=False)
     embed.add_field(name="Owner", value=f"{carrier.owner}", inline=False)
+    embed.add_field(name="Buy/Sell", value=trade_type, inline=False)
     embed.add_field(name="Item", value=marketitemname, inline=False)
     embed.add_field(name="Amount", value=marketitemamount, inline=True)
     embed.add_field(name="Purchase/sale for:  ", value=marketitemvalue, inline=True)
