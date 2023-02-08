@@ -2,7 +2,6 @@ from nextcord import Embed, ButtonStyle
 from nextcord.ui import View, Button
 
 from caching import getCarrierObjectByID
-from commands.market import marketitemname, marketitemamount, marketitemvalue 
 
 from datetime import datetime
 
@@ -10,7 +9,7 @@ def getCarrierInfoEmbed(carrier_id):
     carrier = getCarrierObjectByID(carrier_id)
     embed = Embed(title=f"Carrier Info - {carrier.name} - {carrier.callsign}")
     embed.add_field(name="Current Location", value=carrier.currentLocation, inline=True)
-    embed.add_field(name="Docking Access", value=carrier.dockingAccess, inline=True)
+    embed.add_field(name="Docking Access", value=carrier.dockingAccess["label"], inline=True)
     embed.add_field(name="Owner", value=carrier.owner, inline=True)
 
     # add services
@@ -37,7 +36,7 @@ def getCarrierInfoStaticEmbed(carrier_id):
     carrier = getCarrierObjectByID(carrier_id)
     embed = Embed(title=f"Carrier Info - {carrier.name} - {carrier.callsign}")
     embed.add_field(name="Current Location", value=carrier.currentLocation, inline=True)
-    embed.add_field(name="Docking Access", value=carrier.dockingAccess, inline=True)
+    embed.add_field(name="Docking Access", value=carrier.dockingAccess["label"], inline=True)
     embed.add_field(name="Owner", value=carrier.owner, inline=True)
 
     # add services
@@ -78,5 +77,15 @@ def getCarrierListEmbed(carriers, isAdmin=False):
     return embed, view
 
 
-def getMarketEmbed():
-    print("placeholder")
+def getMarketEmbed(carrierobject, marketitemname, marketitemamount, marketitemvalue):
+    embed = Embed(title="Market")
+    embed.add_field(name= "Carrier", value= {carrierobject.name} - {carrierobject.callsign})
+    embed.add_field(name="Item", value=marketitemname, inline=True)
+    embed.add_field(name="Amount", value=marketitemamount, inline=True)
+    embed.add_field(name="Value", value=marketitemvalue, inline=True)
+    # make embed side color #ffb400
+    embed.colour = 0xffb400
+    # set footer
+    embed.set_footer(text=f'powered by Ruehrstaat API')
+    view = View()
+    return embed, view

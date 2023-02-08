@@ -3,11 +3,14 @@ import requests, os, time, json
 
 cached_carriers = {}
 
+API_URL = 'https://api.ruehrstaat.de/api/v1/'
+#API_URL = 'http://localhost:8000/api/v1/'
+
 def __getCarrierInfo(carrierID):
     # check if carrier is cached and if yes delete it
     if carrierID in cached_carriers:
         del cached_carriers[carrierID]
-    url = 'https://api.ruehrstaat.de/api/v1/carrier?id=' + str(carrierID)
+    url = API_URL + 'carrier?id=' + str(carrierID)
     headers = {'Authorization': 'Bearer ' + os.getenv("READ_API_KEY")}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
@@ -22,7 +25,7 @@ def __getCarrierInfo(carrierID):
 
 
 def recacheAllCarriers():
-    url = 'https://api.ruehrstaat.de/api/v1/getAllCarriers'
+    url = API_URL + 'getAllCarriers'
     headers = {'Authorization': 'Bearer ' + os.getenv("READ_API_KEY")}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:

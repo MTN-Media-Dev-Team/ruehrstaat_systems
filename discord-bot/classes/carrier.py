@@ -3,6 +3,7 @@ import json, os, requests, logging, time
 from .service import Service as CarrierService
 
 API_URL = 'https://api.ruehrstaat.de/api/v1/'
+#API_URL = 'http://localhost:8000/api/v1/'
 
 CARRIER_SERVICES = {}
 CARRIER_INFO = {}
@@ -26,7 +27,8 @@ def getCarrierInfo():
     headers = {'Authorization': 'Bearer ' + os.getenv("READ_API_KEY")}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
-        CARRIER_INFO["dockingAccess"] = json.loads(response.content)["dockingAccess"]
+        # response json is a list of lists with name and label. save into CARRIER_INFO dict with .name and .label so it can be accessed by name
+        CARRIER_INFO["dockingAccess"] = {dockingAccess[0]: {"name": dockingAccess[0], "label": dockingAccess[1]} for dockingAccess in json.loads(response.content)["dockingAccess"]}
     else:
         CARRIER_INFO["dockingAccess"] = {}
         return None
@@ -34,18 +36,13 @@ def getCarrierInfo():
     url = API_URL + 'getCarrierInfo?type=category'
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
-        CARRIER_INFO["category"] = json.loads(response.content)["category"]
+        # response json is a list of lists with name and label. save into CARRIER_INFO dict with .name and .label so it can be accessed by name
+        CARRIER_INFO["category"] = {category[0]: {"name": category[0], "label": category[1]} for category in json.loads(response.content)["carrierCategory"]}
     else:
         CARRIER_INFO["category"] = {}
         return None
+
     
-    # log categories and docking access for debugging
-    logging.info("Categories:")
-    for category in CARRIER_INFO["category"]:
-        logging.info(CARRIER_INFO["category"][category])
-    logging.info("Docking Access:")
-    for access in CARRIER_INFO["dockingAccess"]:
-        logging.info(CARRIER_INFO["dockingAccess"][access])
 
 getCarrierInfo()
 
@@ -70,12 +67,8 @@ class Carrier:
         self.callsign = carrier_data["callsign"]
         self.currentLocation = carrier_data["currentLocation"]
         self.previousLocation = carrier_data["previousLocation"]
-        
         if carrier_data["dockingAccess"] in CARRIER_INFO["dockingAccess"]:
             self.dockingAccess = CARRIER_INFO["dockingAccess"][carrier_data["dockingAccess"]]
-
-        # log for debugging
-        logging.debug("Carrier docking access: " + str(self.dockingAccess))
 
         self.owner = carrier_data["owner"]
 
@@ -85,9 +78,6 @@ class Carrier:
         
         if carrier_data["category"] in CARRIER_INFO["category"]:
             self.category = CARRIER_INFO["category"][carrier_data["category"]]
-
-        # log for debugging
-        logging.debug("Carrier category: " + str(self.category))
 
         # save current timestamp as last update
         self.last_update = time.time()
