@@ -26,3 +26,7 @@ def refreshCarrierEmbeds(bot, args_dict, carrier_id=None):
     embed, view = getCarrierInfoStaticEmbed(carrier_id)
     bot.getChannel(db_object.carrier_channel_id).send(embed=embed, view=view)
     
+
+# TODO: implement Formatter for Market item Names
+def formatMarketItemName(marketitemname):
+    return marketitemname

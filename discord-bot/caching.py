@@ -95,6 +95,3 @@ def getAllCarrierObjects():
     return cached_carriers
 
 
-def getAllMarketNames(marketitemname): # TODO: implement getAllMarketNames()
-    # market names from database
-    return marketitemname

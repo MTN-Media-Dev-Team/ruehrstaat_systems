@@ -1,7 +1,8 @@
 from nextcord import Interaction, SlashOption
 from nextcord.ui import Select, View
-from caching import getCarrierObjectByName, getAllMarketNames
-from classes.market import Market
+from caching import getCarrierObjectByName
+from helpfunctions import formatMarketItemName
+from classes.market import MarketCommand
 
 
 
@@ -23,10 +24,10 @@ def initMarketCommands(bot, args_dict):
                 await interaction.response.send_message("Value must be greater than 0", ephemeral=True)
             else: 
                 carrier = getCarrierObjectByName(carrier)
-                marketitemname = getAllMarketNames(marketitemname) # TODO: implement Command to get all market names
+                marketitemname = formatMarketItemName(marketitemname)
                 channel_id = "PLACEHOLDER" # TODO: implement Command to get channel id from Database
                 trade_type = trade_type
 
-                marketnew = Market(carrier, marketitemname, marketitemamount, marketitemvalue, station, system, trade_type, opened_by, owner)
+                marketnew = MarketCommand(carrier, marketitemname, marketitemamount, marketitemvalue, station, system, trade_type, opened_by, owner)
                 await interaction.response.send_message(embed=marketnew.embed, view=marketnew.view)
 

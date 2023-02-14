@@ -33,8 +33,6 @@ print(LONGVERSION)
 
 bot = nxCommands.Bot()
 
-from database import BotDB
-db = BotDB()
 
 # initialize carriers
 from classes import carrier
@@ -49,7 +47,7 @@ async def on_ready():
     logging.info("------")
 
 from commands.admin import initAdminCommands
-initAdminCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID, "db": db})
+initAdminCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID})
 
 from commands.carrier import initCarrierCommands
 initCarrierCommands(bot, {"TESTING_GUILD_ID": TESTING_GUILD_ID})
