@@ -4,7 +4,7 @@ import logging
 from embeds import getCarrierInfoStaticEmbed
 
 def formatCarrierName(carrierName):
-    if not carrierName.startswith("RST "):
+    if not carrierName.startswith("RST s"):
         carrierName = "RST " + carrierName
     carrierNames = getAllCarrierNamesAsList()
     if carrierName in carrierNames:
